@@ -1,5 +1,18 @@
 # Pim Pam Pet - Dutch Word Game
 
+LIVE DEMO: https://michielpost.github.io/KiroDev-PimPamPet/
+
+My first experience using Kiro.Dev to generate a word game (Pim Pam Pet).
+- My initial input was just 5 lines of text to describe the game
+- It generates a lot of specs and taks based on that
+- It's a hassle to start all the tasks
+- Kiro.Dev AI has a lot of text output to tell you what it's doing, I mostly skip it
+- Used the vibe coding mode to fix some bugs
+- It has trouble translating every part of the game, some text is not translated
+
+Start Kiro.Dev generated readme:
+-----
+
 A fun and educational word game designed for 7-year-old children, featuring a spinning wheel letter selector and Dutch vocabulary questions. This digital recreation of the classic "Pim Pam Pet" game combines learning with play to help children expand their vocabulary in both Dutch and English.
 
 ## 🎯 Educational Purpose
