@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Handling Test - Nederlands Woordspel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-button.danger {
+            background: #f44336;
+        }
+        .test-button.warning {
+            background: #ff9800;
+        }
+        .test-button.info {
+            background: #2196F3;
+        }
+        .error-display {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 2px solid #dc3545;
+            display: none;
+            font-weight: bold;
+        }
+        .error-display.warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+        .error-display.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #17a2b8;
+        }
+        .error-display.success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+        .test-results {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Error Handling Test - Nederlands Woordspel</h1>
+    
+    <div class="test-section">
+        <h2>Error Handler Tests</h2>
+        <p>Test de verschillende error handling functionaliteiten:</p>
+        
+        <button class="test-button danger" onclick="testCriticalError()">Test Critical Error</button>
+        <button class="test-button warning" onclick="testAnimationFailure()">Test Animation Failure</button>
+        <button class="test-button warning" onclick="testStorageError()">Test Storage Error</button>
+        <button class="test-button info" onclick="testBrowserSupport()">Test Browser Support</button>
+        <button class="test-button" onclick="testFallbackMode()">Test Fallback Mode</button>
+        <button class="test-button" onclick="clearErrors()">Clear Errors</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Error Display</h2>
+        <div id="error-display" class="error-display"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results" class="test-results">Klik op een test knop om te beginnen...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Game Component Tests</h2>
+        <button class="test-button" onclick="testWheelError()">Test Wheel Spin Error</button>
+        <button class="test-button" onclick="testQuestionError()">Test Question Load Error</button>
+        <button class="test-button" onclick="testGameControllerError()">Test Game Controller Error</button>
+    </div>
+
+    <!-- Include the error handler -->
+    <script src="../js/ErrorHandler.js"></script>
+    <script src="../js/QuestionManager.js"></script>
+    <script src="../js/SpinningWheel.js"></script>
+    <script src="../js/QuestionDisplay.js"></script>
+    <script src="../js/GameController.js"></script>
+
+    <script>
+        let errorHandler;
+        let testResults = document.getElementById('test-results');
+
+        // Initialize error handler
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                errorHandler = new ErrorHandler();
+                window.errorHandler = errorHandler;
+                log('Error handler initialized successfully');
+                
+                // Test browser support
+                const support = errorHandler.getBrowserSupport();
+                log('Browser support: ' + JSON.stringify(support, null, 2));
+                
+            } catch (error) {
+                log('Failed to initialize error handler: ' + error.message);
+            }
+        });
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            testResults.textContent += `[${timestamp}] ${message}\n`;
+            testResults.scrollTop = testResults.scrollHeight;
+        }
+
+        function testCriticalError() {
+            log('Testing critical error...');
+            if (errorHandler) {
+                errorHandler.handleCriticalError(
+                    new Error('Test critical error'),
+                    'Dit is een test van een kritieke fout. Het spel zou nu moeten stoppen.'
+                );
+            } else {
+                log('Error handler not available');
+            }
+        }
+
+        function testAnimationFailure() {
+            log('Testing animation failure...');
+            if (errorHandler) {
+                errorHandler.handleAnimationFailure(
+                    'test-animation',
+                    () => log('Fallback function executed'),
+                    'Test animatie gefaald - fallback gebruikt!'
+                );
+            } else {
+                log('Error handler not available');
+            }
+        }
+
+        function testStorageError() {
+            log('Testing storage error...');
+            if (errorHandler) {
+                errorHandler.handleStorageError(
+                    new Error('Test storage error'),
+                    'save'
+                );
+            } else {
+                log('Error handler not available');
+            }
+        }
+
+        function testBrowserSupport() {
+            log('Testing browser support check...');
+            if (errorHandler) {
+                const support = errorHandler.getBrowserSupport();
+                log('Browser support results:');
+                Object.entries(support).forEach(([feature, supported]) => {
+                    log(`  ${feature}: ${supported ? 'SUPPORTED' : 'NOT SUPPORTED'}`);
+                });
+            } else {
+                log('Error handler not available');
+            }
+        }
+
+        function testFallbackMode() {
+            log('Testing fallback mode...');
+            if (errorHandler) {
+                errorHandler.enableGracefulDegradation();
+                log('Fallback mode enabled');
+                log('Is fallback mode: ' + errorHandler.isFallbackMode());
+            } else {
+                log('Error handler not available');
+            }
+        }
+
+        function clearErrors() {
+            log('Clearing errors...');
+            if (errorHandler) {
+                errorHandler.clearError();
+            }
+            testResults.textContent = 'Errors cleared. Ready for new tests...\n';
+        }
+
+        function testWheelError() {
+            log('Testing wheel spin error...');
+            try {
+                // Create a wheel with invalid container to trigger error
+                const wheel = new SpinningWheel('non-existent-container');
+                wheel.spin().catch(error => {
+                    log('Wheel error caught: ' + error.message);
+                });
+            } catch (error) {
+                log('Wheel initialization error: ' + error.message);
+            }
+        }
+
+        function testQuestionError() {
+            log('Testing question load error...');
+            try {
+                // Create question manager and force an error
+                const questionManager = new QuestionManager();
+                const questionDisplay = new QuestionDisplay('non-existent-container', questionManager);
+                log('Question display created with invalid container');
+            } catch (error) {
+                log('Question error: ' + error.message);
+            }
+        }
+
+        function testGameControllerError() {
+            log('Testing game controller error...');
+            try {
+                // Create game controller with invalid containers
+                const gameController = new GameController('invalid-wheel', 'invalid-question');
+                log('Game controller created with invalid containers');
+            } catch (error) {
+                log('Game controller error: ' + error.message);
+            }
+        }
+
+        // Global error handlers for testing
+        window.addEventListener('error', function(event) {
+            log('Global error caught: ' + event.error.message);
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            log('Unhandled promise rejection: ' + event.reason);
+        });
+    </script>
+</body>
+</html>

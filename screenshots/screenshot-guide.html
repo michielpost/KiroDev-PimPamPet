@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Guide - Pim Pam Pet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .screenshot-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .screenshot-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .instructions {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .elements-list {
+            background-color: #fff;
+            padding: 15px;
+            border-left: 4px solid #27ae60;
+            margin: 15px 0;
+        }
+        .code-snippet {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .tip {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Screenshot Guide for Pim Pam Pet Dutch Word Game</h1>
+    <p>This guide provides detailed instructions for capturing screenshots of the game interface for documentation purposes.</p>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">1. Main Game Interface</h2>
+        <p><strong>Filename:</strong> <code>main-game-interface.png</code></p>
+        
+        <div class="instructions">
+            <h3>Capture Instructions:</h3>
+            <ol>
+                <li>Open <code>index.html</code> in Chrome or Firefox</li>
+                <li>If language selection appears, choose "Nederlands"</li>
+                <li>Click "Nieuw Spel" to initialize the game</li>
+                <li>Ensure the interface shows a question and the spinning wheel</li>
+                <li>Take screenshot of the full game interface</li>
+            </ol>
+        </div>
+
+        <div class="elements-list">
+            <h3>Elements to Include:</h3>
+            <ul>
+                <li>✅ Game title "Nederlands Woordspel"</li>
+                <li>✅ Language toggle button showing "English"</li>
+                <li>✅ "Beheer Vragen" button</li>
+                <li>✅ Question display (e.g., "Noem een fruit")</li>
+                <li>✅ Spinning wheel with letters</li>
+                <li>✅ Wheel viewing window</li>
+                <li>✅ "Draai het Wiel!" button</li>
+                <li>✅ "Nieuw Spel" button</li>
+                <li>✅ Round counter/status</li>
+            </ul>
+        </div>
+
+        <div class="tip">
+            <strong>Tip:</strong> Make sure the browser window is sized to show the complete interface without scrolling.
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">2. Language Selection Modal</h2>
+        <p><strong>Filename:</strong> <code>language-selection-modal.png</code></p>
+        
+        <div class="instructions">
+            <h3>Capture Instructions:</h3>
+            <ol>
+                <li>Clear browser localStorage to reset language preference</li>
+                <li>Open browser developer tools (F12)</li>
+                <li>Go to Application/Storage tab → Local Storage</li>
+                <li>Delete all entries for the game domain</li>
+                <li>Refresh the page</li>
+                <li>Language selection modal should appear automatically</li>
+                <li>Take screenshot showing the modal</li>
+            </ol>
+        </div>
+
+        <div class="code-snippet">
+// Alternative: Trigger modal programmatically
+// In browser console:
+localStorage.clear();
+window.languageSelectionUI.showInitialSelection();
+        </div>
+
+        <div class="elements-list">
+            <h3>Elements to Include:</h3>
+            <ul>
+                <li>✅ Semi-transparent modal overlay</li>
+                <li>✅ Centered language selection dialog</li>
+                <li>✅ "Choose Your Language" text</li>
+                <li>✅ "Nederlands" button</li>
+                <li>✅ "English" button</li>
+                <li>✅ Clean modal design</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">3. Question Management Interface</h2>
+        <p><strong>Filename:</strong> <code>question-management-interface.png</code></p>
+        
+        <div class="instructions">
+            <h3>Capture Instructions:</h3>
+            <ol>
+                <li>Start the game in Dutch mode</li>
+                <li>Click "Beheer Vragen" button</li>
+                <li>Add a sample custom question to show the interface in use</li>
+                <li>Ensure the question list shows both default and custom questions</li>
+                <li>Take screenshot of the complete management interface</li>
+            </ol>
+        </div>
+
+        <div class="elements-list">
+            <h3>Elements to Include:</h3>
+            <ul>
+                <li>✅ Question management modal/interface</li>
+                <li>✅ List of existing questions</li>
+                <li>✅ "Add Question" form with input field</li>
+                <li>✅ Edit buttons for questions</li>
+                <li>✅ Delete buttons for questions</li>
+                <li>✅ Save/Cancel buttons</li>
+                <li>✅ Dutch interface text</li>
+            </ul>
+        </div>
+
+        <div class="tip">
+            <strong>Tip:</strong> Add a custom question like "Noem een speelgoed" to show the interface with user content.
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">4. Game in Action</h2>
+        <p><strong>Filename:</strong> <code>game-in-action.png</code></p>
+        
+        <div class="instructions">
+            <h3>Capture Instructions:</h3>
+            <ol>
+                <li>Start a new game</li>
+                <li>Click "Draai het Wiel!" to spin the wheel</li>
+                <li>Wait for the wheel animation to complete</li>
+                <li>Take screenshot showing the selected letter in the viewing window</li>
+                <li>Ensure the question and selected letter are both visible</li>
+            </ol>
+        </div>
+
+        <div class="elements-list">
+            <h3>Elements to Include:</h3>
+            <ul>
+                <li>✅ Active question displayed</li>
+                <li>✅ Spinning wheel with selected letter visible</li>
+                <li>✅ Letter clearly shown in viewing window</li>
+                <li>✅ Buttons in appropriate states (enabled/disabled)</li>
+                <li>✅ Visual indication wheel has stopped</li>
+                <li>✅ Any result or feedback text</li>
+            </ul>
+        </div>
+
+        <div class="code-snippet">
+// If wheel doesn't stop at desired letter, use console:
+// Force specific letter selection for screenshot
+window.gameController.getSpinningWheel().forceSelectLetter('M');
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">5. English Language Mode</h2>
+        <p><strong>Filename:</strong> <code>english-language-mode.png</code></p>
+        
+        <div class="instructions">
+            <h3>Capture Instructions:</h3>
+            <ol>
+                <li>Switch to English language mode using the language toggle</li>
+                <li>Start a new game to show English question</li>
+                <li>Take screenshot showing the complete English interface</li>
+                <li>Ensure all text elements are in English</li>
+            </ol>
+        </div>
+
+        <div class="elements-list">
+            <h3>Elements to Include:</h3>
+            <ul>
+                <li>✅ Game title "Dutch Word Game"</li>
+                <li>✅ English question (e.g., "Name a fruit")</li>
+                <li>✅ "Spin the Wheel!" button</li>
+                <li>✅ "New Game" button</li>
+                <li>✅ "Manage" button</li>
+                <li>✅ Language toggle showing "Nederlands"</li>
+                <li>✅ Same visual layout with English text</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">Technical Specifications</h2>
+        
+        <div class="elements-list">
+            <h3>Screenshot Requirements:</h3>
+            <ul>
+                <li><strong>Format:</strong> PNG (for transparency and quality)</li>
+                <li><strong>Resolution:</strong> Minimum 1200px width</li>
+                <li><strong>Browser:</strong> Chrome or Firefox (latest version)</li>
+                <li><strong>Window Size:</strong> 1920x1080 or similar desktop resolution</li>
+                <li><strong>Quality:</strong> High resolution, no compression artifacts</li>
+                <li><strong>Cropping:</strong> Remove browser chrome (address bar, bookmarks, etc.)</li>
+            </ul>
+        </div>
+
+        <div class="code-snippet">
+/* Recommended browser settings for screenshots */
+/* Open developer tools and set device emulation: */
+/* Device: Custom */
+/* Dimensions: 1200 x 800 */
+/* Device pixel ratio: 1 */
+/* User agent: Desktop */
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">Quick Actions</h2>
+        <p>Use these buttons to quickly access the game for screenshots:</p>
+        
+        <a href="../index.html" class="button" target="_blank">Open Game</a>
+        <a href="../index.html" class="button" onclick="localStorage.clear();" target="_blank">Open Game (Reset Language)</a>
+        
+        <div class="code-snippet">
+// Useful console commands for screenshots:
+localStorage.clear();                    // Reset language preference
+window.languageSelectionUI.showInitialSelection(); // Show language modal
+window.gameController.startNewRound();   // Start new game
+document.getElementById('manage-questions-btn').click(); // Open question management
+        </div>
+    </div>
+
+    <div class="screenshot-section">
+        <h2 class="screenshot-title">Troubleshooting</h2>
+        
+        <div class="elements-list">
+            <h3>Common Issues:</h3>
+            <ul>
+                <li><strong>Language modal doesn't appear:</strong> Clear localStorage and refresh</li>
+                <li><strong>Wheel doesn't spin:</strong> Click "Nieuw Spel" first to initialize</li>
+                <li><strong>Questions not loading:</strong> Check browser console for errors</li>
+                <li><strong>Interface looks different:</strong> Ensure browser zoom is at 100%</li>
+                <li><strong>Text is cut off:</strong> Increase browser window size</li>
+            </ul>
+        </div>
+
+        <div class="tip">
+            <strong>Pro Tip:</strong> Use browser developer tools to simulate different screen sizes and ensure responsive design is captured correctly.
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive functionality to this guide
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for code snippets to copy to clipboard
+            const codeSnippets = document.querySelectorAll('.code-snippet');
+            codeSnippets.forEach(snippet => {
+                snippet.style.cursor = 'pointer';
+                snippet.title = 'Click to copy to clipboard';
+                snippet.addEventListener('click', function() {
+                    navigator.clipboard.writeText(this.textContent).then(() => {
+                        const originalBg = this.style.backgroundColor;
+                        this.style.backgroundColor = '#27ae60';
+                        setTimeout(() => {
+                            this.style.backgroundColor = originalBg;
+                        }, 200);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

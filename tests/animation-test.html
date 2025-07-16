@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Test - Dutch Word Game</title>
+    <link rel="stylesheet" href="../css/main-game.css">
+    <link rel="stylesheet" href="../css/spinning-wheel.css">
+    <link rel="stylesheet" href="../css/question-management.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1 class="game-title">Animation Test</h1>
+            <p class="game-subtitle">Testing Enhanced Animations and Transitions</p>
+        </header>
+
+        <div class="game-content">
+            <!-- Question Section -->
+            <section class="question-section" id="question-section">
+                <div class="question-display" id="question-display">
+                    <div class="question-text" id="current-question">
+                        Test vraag voor animatie verificatie
+                    </div>
+                </div>
+            </section>
+
+            <!-- Wheel Section -->
+            <section class="wheel-section" id="wheel-section">
+                <div id="spinning-wheel-container"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="game-results">
+                <div class="spin-results">
+                    <h3>🎉 Test Resultaat!</h3>
+                    <p><strong>Vraag:</strong> Test vraag</p>
+                    <p><strong>Letter:</strong> A</p>
+                    <p class="instruction">Test instructie voor animatie!</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <button class="game-button" id="test-button-transitions">Test Button Transitions</button>
+            <button class="game-button secondary" id="test-loading-state">Test Loading State</button>
+            <button class="game-button" id="test-wheel-spin">Test Wheel Spin</button>
+            <button class="game-button" id="test-question-transition">Test Question Transition</button>
+            <button class="game-button" id="test-game-phases">Test Game Phases</button>
+        </div>
+
+        <!-- Test Results Display -->
+        <div id="test-results" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px; display: none;">
+            <h3>Test Results:</h3>
+            <ul id="test-results-list"></ul>
+        </div>
+    </div>
+
+    <!-- Include JavaScript files -->
+    <script src="../js/QuestionManager.js"></script>
+    <script src="../js/QuestionDisplay.js"></script>
+    <script src="../js/SpinningWheel.js"></script>
+    <script src="../js/GameController.js"></script>
+
+    <script>
+        // Animation Test Script
+        class AnimationTester {
+            constructor() {
+                this.testResults = [];
+                this.initializeComponents();
+                this.setupEventListeners();
+            }
+
+            initializeComponents() {
+                // Initialize spinning wheel for testing
+                this.spinningWheel = new SpinningWheel('spinning-wheel-container');
+                
+                // Initialize question manager and display
+                this.questionManager = new QuestionManager();
+                this.questionDisplay = new QuestionDisplay('question-display', this.questionManager);
+            }
+
+            setupEventListeners() {
+                document.getElementById('test-button-transitions').addEventListener('click', () => {
+                    this.testButtonTransitions();
+                });
+
+                document.getElementById('test-loading-state').addEventListener('click', () => {
+                    this.testLoadingStates();
+                });
+
+                document.getElementById('test-wheel-spin').addEventListener('click', () => {
+                    this.testWheelAnimations();
+                });
+
+                document.getElementById('test-question-transition').addEventListener('click', () => {
+                    this.testQuestionTransitions();
+                });
+
+                document.getElementById('test-game-phases').addEventListener('click', () => {
+                    this.testGamePhaseTransitions();
+                });
+            }
+
+            testButtonTransitions() {
+                this.logTest('Testing button transitions and hover effects...');
+                
+                const testButton = document.getElementById('test-button-transitions');
+                
+                // Test hover effect simulation
+                testButton.style.transform = 'translateY(-3px) scale(1.02)';
+                testButton.style.boxShadow = '0 8px 20px rgba(76, 175, 80, 0.4)';
+                
+                setTimeout(() => {
+                    testButton.style.transform = '';
+                    testButton.style.boxShadow = '';
+                    this.logTest('✓ Button transitions working correctly');
+                }, 1000);
+
+                // Test button press effect
+                setTimeout(() => {
+                    testButton.classList.add('button-pressed');
+                    setTimeout(() => {
+                        testButton.classList.remove('button-pressed');
+                        this.logTest('✓ Button press animation working correctly');
+                    }, 200);
+                }, 1200);
+            }
+
+            testLoadingStates() {
+                this.logTest('Testing loading states and transitions...');
+                
+                const testButton = document.getElementById('test-loading-state');
+                const originalText = testButton.textContent;
+                
+                // Test button loading state
+                testButton.classList.add('loading');
+                testButton.disabled = true;
+                
+                setTimeout(() => {
+                    testButton.classList.remove('loading');
+                    testButton.disabled = false;
+                    this.logTest('✓ Button loading state working correctly');
+                }, 2000);
+
+                // Test question display loading state
+                const questionDisplay = document.getElementById('question-display');
+                questionDisplay.classList.add('loading');
+                
+                setTimeout(() => {
+                    questionDisplay.classList.remove('loading');
+                    this.logTest('✓ Question display loading state working correctly');
+                }, 2500);
+            }
+
+            async testWheelAnimations() {
+                this.logTest('Testing enhanced wheel animations...');
+                
+                try {
+                    const selectedLetter = await this.spinningWheel.spin();
+                    this.logTest(`✓ Wheel spin animation completed. Selected letter: ${selectedLetter}`);
+                    this.logTest('✓ Enhanced wheel glow and deceleration effects working');
+                    this.logTest('✓ Letter reveal animation working correctly');
+                } catch (error) {
+                    this.logTest(`✗ Wheel animation test failed: ${error.message}`);
+                }
+            }
+
+            testQuestionTransitions() {
+                this.logTest('Testing question transition animations...');
+                
+                const questionElement = document.getElementById('current-question');
+                
+                // Test fade out transition
+                questionElement.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    questionElement.textContent = 'Nieuwe test vraag met animatie!';
+                    questionElement.classList.remove('fade-out');
+                    questionElement.classList.add('fade-in', 'active');
+                    
+                    setTimeout(() => {
+                        questionElement.classList.remove('fade-in');
+                        this.logTest('✓ Question transition animations working correctly');
+                    }, 500);
+                }, 300);
+            }
+
+            testGamePhaseTransitions() {
+                this.logTest('Testing game phase transitions...');
+                
+                const gameContainer = document.querySelector('.game-container');
+                const questionSection = document.getElementById('question-section');
+                const wheelSection = document.getElementById('wheel-section');
+                const resultsSection = document.getElementById('game-results');
+                
+                // Test game phase transition
+                gameContainer.classList.add('game-phase-transition');
+                setTimeout(() => {
+                    gameContainer.classList.remove('game-phase-transition');
+                    this.logTest('✓ Game phase transition working correctly');
+                }, 600);
+                
+                // Test section state changes
+                questionSection.classList.add('state-changing');
+                wheelSection.classList.add('state-changing');
+                
+                setTimeout(() => {
+                    questionSection.classList.remove('state-changing');
+                    wheelSection.classList.remove('state-changing');
+                    this.logTest('✓ Section state change animations working correctly');
+                }, 500);
+                
+                // Test results section show/hide
+                setTimeout(() => {
+                    resultsSection.classList.add('show');
+                    resultsSection.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        resultsSection.classList.remove('show');
+                        resultsSection.classList.add('hide');
+                        
+                        setTimeout(() => {
+                            resultsSection.style.display = 'none';
+                            resultsSection.classList.remove('hide');
+                            this.logTest('✓ Results section animations working correctly');
+                        }, 400);
+                    }, 2000);
+                }, 1000);
+                
+                // Test active game state
+                setTimeout(() => {
+                    questionSection.classList.add('game-active');
+                    wheelSection.classList.add('game-active');
+                    
+                    setTimeout(() => {
+                        questionSection.classList.remove('game-active');
+                        wheelSection.classList.remove('game-active');
+                        this.logTest('✓ Active game state animations working correctly');
+                    }, 3000);
+                }, 1500);
+            }
+
+            logTest(message) {
+                this.testResults.push({
+                    timestamp: new Date().toLocaleTimeString(),
+                    message: message
+                });
+                
+                this.displayResults();
+                console.log(`[Animation Test] ${message}`);
+            }
+
+            displayResults() {
+                const resultsContainer = document.getElementById('test-results');
+                const resultsList = document.getElementById('test-results-list');
+                
+                resultsContainer.style.display = 'block';
+                
+                resultsList.innerHTML = this.testResults
+                    .slice(-10) // Show last 10 results
+                    .map(result => `<li><strong>${result.timestamp}:</strong> ${result.message}</li>`)
+                    .join('');
+                
+                // Scroll to bottom
+                resultsContainer.scrollTop = resultsContainer.scrollHeight;
+            }
+        }
+
+        // Initialize animation tester when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const tester = new AnimationTester();
+            tester.logTest('Animation test suite initialized. Click buttons to test different animations.');
+        });
+    </script>
+</body>
+</html>

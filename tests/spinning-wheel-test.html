@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinning Wheel Test</title>
+    <link rel="stylesheet" href="../css/spinning-wheel.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .test-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .info-panel {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .letter-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        .letter-badge {
+            background-color: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .status {
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.spinning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status.ready {
+            background-color: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dutch Word Game - Spinning Wheel Test</h1>
+    
+    <div class="test-section">
+        <h2>Spinning Wheel Component</h2>
+        <div id="wheel-container"></div>
+        
+        <div class="test-controls">
+            <button id="spin-btn" onclick="testSpin()">Draai het Wiel!</button>
+            <button onclick="resetWheel()">Reset Wiel</button>
+            <button onclick="testRandomLetter()">Test Willekeurige Letter</button>
+        </div>
+        
+        <div id="status" class="status ready">Klaar om te draaien</div>
+    </div>
+    
+    <div class="test-section">
+        <div class="info-panel">
+            <h3>Wiel Informatie</h3>
+            <p><strong>Totaal letters:</strong> <span id="total-letters">-</span></p>
+            <p><strong>Geselecteerde letter:</strong> <span id="current-letter">-</span></p>
+            <p><strong>Uitgesloten letters:</strong> c, x, q, y</p>
+            
+            <h4>Alle beschikbare letters:</h4>
+            <div id="letter-list" class="letter-list"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Resultaten</h3>
+        <div id="test-results"></div>
+        <button onclick="runTests()">Voer Tests Uit</button>
+    </div>
+
+    <script src="../js/SpinningWheel.js"></script>
+    <script>
+        let spinningWheel;
+        
+        // Initialize the spinning wheel
+        function initializeWheel() {
+            spinningWheel = new SpinningWheel('wheel-container');
+            updateInfo();
+        }
+        
+        // Update information display
+        function updateInfo() {
+            if (!spinningWheel) return;
+            
+            const stats = spinningWheel.getWheelStats();
+            document.getElementById('total-letters').textContent = stats.totalLetters;
+            document.getElementById('current-letter').textContent = stats.selectedLetter || '-';
+            
+            // Display all letters
+            const letterList = document.getElementById('letter-list');
+            letterList.innerHTML = '';
+            spinningWheel.getAllLetters().forEach(letter => {
+                const badge = document.createElement('span');
+                badge.className = 'letter-badge';
+                badge.textContent = letter.toUpperCase();
+                letterList.appendChild(badge);
+            });
+        }
+        
+        // Test spinning functionality
+        async function testSpin() {
+            if (!spinningWheel || spinningWheel.isWheelSpinning()) return;
+            
+            const spinBtn = document.getElementById('spin-btn');
+            const status = document.getElementById('status');
+            
+            spinBtn.disabled = true;
+            spinBtn.textContent = 'Aan het draaien...';
+            status.textContent = 'Wiel draait...';
+            status.className = 'status spinning';
+            
+            try {
+                const selectedLetter = await spinningWheel.spin();
+                
+                status.textContent = `Letter geselecteerd: ${selectedLetter.toUpperCase()}`;
+                status.className = 'status ready';
+                
+                updateInfo();
+            } catch (error) {
+                status.textContent = 'Fout bij draaien van het wiel';
+                status.className = 'status error';
+            } finally {
+                spinBtn.disabled = false;
+                spinBtn.textContent = 'Draai het Wiel!';
+            }
+        }
+        
+        // Reset wheel to initial state
+        function resetWheel() {
+            if (!spinningWheel) return;
+            
+            spinningWheel.reset();
+            updateInfo();
+            
+            const status = document.getElementById('status');
+            status.textContent = 'Wiel gereset';
+            status.className = 'status ready';
+        }
+        
+        // Test random letter selection
+        function testRandomLetter() {
+            if (!spinningWheel) return;
+            
+            const letters = spinningWheel.getAllLetters();
+            const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+            
+            spinningWheel.forceSelectLetter(randomLetter);
+            updateInfo();
+            
+            const status = document.getElementById('status');
+            status.textContent = `Geforceerde selectie: ${randomLetter.toUpperCase()}`;
+            status.className = 'status ready';
+        }
+        
+        // Run automated tests
+        function runTests() {
+            const results = [];
+            
+            // Test 1: Wheel initialization
+            try {
+                const testWheel = new SpinningWheel('wheel-container');
+                const stats = testWheel.getWheelStats();
+                results.push({
+                    name: 'Wiel Initialisatie',
+                    passed: stats.totalLetters === 22,
+                    message: `Verwacht 22 letters, kreeg ${stats.totalLetters}`
+                });
+            } catch (error) {
+                results.push({
+                    name: 'Wiel Initialisatie',
+                    passed: false,
+                    message: `Fout: ${error.message}`
+                });
+            }
+            
+            // Test 2: Letter exclusion
+            try {
+                const letters = spinningWheel.getAllLetters();
+                const excludedLetters = ['c', 'x', 'q', 'y'];
+                const hasExcluded = excludedLetters.some(letter => letters.includes(letter));
+                results.push({
+                    name: 'Letter Uitsluiting',
+                    passed: !hasExcluded,
+                    message: hasExcluded ? 'Uitgesloten letters gevonden' : 'Uitgesloten letters correct weggelaten'
+                });
+            } catch (error) {
+                results.push({
+                    name: 'Letter Uitsluiting',
+                    passed: false,
+                    message: `Fout: ${error.message}`
+                });
+            }
+            
+            // Test 3: Letter selection
+            try {
+                const success = spinningWheel.forceSelectLetter('a');
+                const selected = spinningWheel.getSelectedLetter();
+                results.push({
+                    name: 'Letter Selectie',
+                    passed: success && selected === 'a',
+                    message: success ? `Letter 'a' geselecteerd` : 'Letter selectie gefaald'
+                });
+            } catch (error) {
+                results.push({
+                    name: 'Letter Selectie',
+                    passed: false,
+                    message: `Fout: ${error.message}`
+                });
+            }
+            
+            // Test 4: Invalid letter handling
+            try {
+                const success = spinningWheel.forceSelectLetter('x'); // Excluded letter
+                results.push({
+                    name: 'Ongeldige Letter Afhandeling',
+                    passed: !success,
+                    message: success ? 'Uitgesloten letter werd geaccepteerd' : 'Uitgesloten letter correct geweigerd'
+                });
+            } catch (error) {
+                results.push({
+                    name: 'Ongeldige Letter Afhandeling',
+                    passed: false,
+                    message: `Fout: ${error.message}`
+                });
+            }
+            
+            // Display results
+            displayTestResults(results);
+        }
+        
+        // Display test results
+        function displayTestResults(results) {
+            const container = document.getElementById('test-results');
+            const passed = results.filter(r => r.passed).length;
+            const total = results.length;
+            
+            let html = `<h4>Test Resultaten: ${passed}/${total} geslaagd</h4>`;
+            
+            results.forEach(result => {
+                const status = result.passed ? '✅' : '❌';
+                const color = result.passed ? 'green' : 'red';
+                html += `<div style="color: ${color}; margin: 5px 0;">
+                    ${status} <strong>${result.name}:</strong> ${result.message}
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            initializeWheel();
+        });
+    </script>
+</body>
+</html>

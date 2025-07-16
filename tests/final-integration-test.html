@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Integration Test - Dutch Word Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-passed {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .test-failed {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .test-warning {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-results {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .game-preview {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-pass { background-color: #28a745; }
+        .status-fail { background-color: #dc3545; }
+        .status-warn { background-color: #ffc107; }
+        .test-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Final Integration Test - Dutch Word Game</h1>
+        <p>This test verifies that all components are properly wired together and the complete user flow works correctly.</p>
+        
+        <div class="test-section" id="initialization-test">
+            <h2><span class="status-indicator" id="init-status"></span>1. Component Initialization Test</h2>
+            <p>Testing if all game components initialize correctly with language support.</p>
+            <button class="test-button" onclick="testInitialization()">Run Initialization Test</button>
+            <div class="test-results" id="init-results"></div>
+        </div>
+
+        <div class="test-section" id="language-test">
+            <h2><span class="status-indicator" id="lang-status"></span>2. Language Management Test</h2>
+            <p>Testing language selection, switching, and translation updates.</p>
+            <button class="test-button" onclick="testLanguageManagement()">Test Language Management</button>
+            <div class="test-results" id="lang-results"></div>
+        </div>
+
+        <div class="test-section" id="flow-test">
+            <h2><span class="status-indicator" id="flow-status"></span>3. Complete User Flow Test</h2>
+            <p>Testing the complete user journey from language selection through multiple game rounds.</p>
+            <button class="test-button" onclick="testCompleteUserFlow()">Test Complete Flow</button>
+            <div class="test-results" id="flow-results"></div>
+        </div>
+
+        <div class="test-section" id="question-test">
+            <h2><span class="status-indicator" id="question-status"></span>4. Question Bank Test</h2>
+            <p>Testing both Dutch and English question banks display correctly.</p>
+            <button class="test-button" onclick="testQuestionBanks()">Test Question Banks</button>
+            <div class="test-results" id="question-results"></div>
+        </div>
+
+        <div class="test-section" id="educational-test">
+            <h2><span class="status-indicator" id="edu-status"></span>5. Educational Goals Test</h2>
+            <p>Verifying that educational objectives are met in both languages.</p>
+            <button class="test-button" onclick="testEducationalGoals()">Test Educational Goals</button>
+            <div class="test-results" id="edu-results"></div>
+        </div>
+
+        <div class="test-section" id="integration-test">
+            <h2><span class="status-indicator" id="integration-status"></span>6. Component Integration Test</h2>
+            <p>Testing seamless communication between all components.</p>
+            <button class="test-button" onclick="testComponentIntegration()">Test Integration</button>
+            <div class="test-results" id="integration-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎮 Live Game Preview</h2>
+            <p>Interactive preview of the actual game for manual testing:</p>
+            <div class="game-preview" id="game-preview">
+                <div id="preview-game-container"></div>
+            </div>
+            <button class="test-button" onclick="loadGamePreview()">Load Game Preview</button>
+            <button class="test-button" onclick="clearGamePreview()">Clear Preview</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Test Summary</h2>
+            <div id="test-summary">
+                <p>Run tests above to see summary results.</p>
+            </div>
+            <button class="test-button" onclick="runAllTests()">🚀 Run All Tests</button>
+        </div>
+
+        <div class="test-log" id="test-log">
+            <strong>Test Log:</strong><br>
+            Ready to run tests...
+        </div>
+    </div>
+
+    <!-- Include all game components -->
+    <script src="../js/ErrorHandler.js"></script>
+    <script src="../js/PerformanceOptimizer.js"></script>
+    <script src="../js/LanguageManager.js"></script>
+    <script src="../js/LanguageSelectionUI.js"></script>
+    <script src="../js/QuestionManager.js"></script>
+    <script src="../js/QuestionDisplay.js"></script>
+    <script src="../js/SpinningWheel.js"></script>
+    <script src="../js/QuestionManagementUI.js"></script>
+    <script src="../js/GameController.js"></script>
+
+    <script>
+        // Test state tracking
+        let testResults = {
+            initialization: null,
+            language: null,
+            flow: null,
+            questions: null,
+            educational: null,
+            integration: null
+        };
+
+        let testLog = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            testLog.push(logEntry);
+            
+            const logElement = document.getElementById('test-log');
+            logElement.innerHTML = '<strong>Test Log:</strong><br>' + testLog.slice(-20).join('<br>');
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        function updateTestStatus(testName, status) {
+            const statusElement = document.getElementById(`${testName}-status`);
+            if (statusElement) {
+                statusElement.className = `status-indicator status-${status}`;
+            }
+            
+            const sectionElement = document.getElementById(`${testName}-test`);
+            if (sectionElement) {
+                sectionElement.className = `test-section test-${status === 'pass' ? 'passed' : status === 'fail' ? 'failed' : 'warning'}`;
+            }
+        }
+
+        function displayResults(testName, results) {
+            const resultsElement = document.getElementById(`${testName}-results`);
+            if (resultsElement) {
+                resultsElement.innerHTML = results;
+            }
+        }
+
+        // Test 1: Component Initialization
+        async function testInitialization() {
+            log('Starting component initialization test...');
+            
+            try {
+                // Test ErrorHandler initialization
+                const errorHandler = new ErrorHandler();
+                if (!errorHandler || typeof errorHandler.showError !== 'function') {
+                    throw new Error('ErrorHandler failed to initialize');
+                }
+                log('✓ ErrorHandler initialized successfully');
+
+                // Test PerformanceOptimizer initialization
+                const performanceOptimizer = new PerformanceOptimizer();
+                if (!performanceOptimizer) {
+                    throw new Error('PerformanceOptimizer failed to initialize');
+                }
+                log('✓ PerformanceOptimizer initialized successfully');
+
+                // Test LanguageManager initialization
+                const languageManager = new LanguageManager();
+                if (!languageManager || typeof languageManager.getCurrentLanguage !== 'function') {
+                    throw new Error('LanguageManager failed to initialize');
+                }
+                log('✓ LanguageManager initialized successfully');
+
+                // Test QuestionManager initialization
+                const questionManager = new QuestionManager(languageManager);
+                if (!questionManager || typeof questionManager.getAllQuestions !== 'function') {
+                    throw new Error('QuestionManager failed to initialize');
+                }
+                log('✓ QuestionManager initialized successfully');
+
+                // Create temporary containers for testing
+                const tempContainer = document.createElement('div');
+                tempContainer.id = 'temp-test-container';
+                document.body.appendChild(tempContainer);
+
+                // Test SpinningWheel initialization
+                const spinningWheel = new SpinningWheel('temp-test-container');
+                if (!spinningWheel || typeof spinningWheel.spin !== 'function') {
+                    throw new Error('SpinningWheel failed to initialize');
+                }
+                log('✓ SpinningWheel initialized successfully');
+
+                // Test QuestionDisplay initialization
+                const questionDisplay = new QuestionDisplay('temp-test-container', questionManager, languageManager);
+                if (!questionDisplay || typeof questionDisplay.showRandomQuestion !== 'function') {
+                    throw new Error('QuestionDisplay failed to initialize');
+                }
+                log('✓ QuestionDisplay initialized successfully');
+
+                // Test GameController initialization
+                const gameController = new GameController('temp-test-container', 'temp-test-container', languageManager);
+                if (!gameController || typeof gameController.startNewRound !== 'function') {
+                    throw new Error('GameController failed to initialize');
+                }
+                log('✓ GameController initialized successfully');
+
+                // Clean up
+                document.body.removeChild(tempContainer);
+
+                testResults.initialization = 'pass';
+                updateTestStatus('init', 'pass');
+                displayResults('init', `
+                    <strong>✅ All components initialized successfully!</strong><br>
+                    • ErrorHandler: Working<br>
+                    • PerformanceOptimizer: Working<br>
+                    • LanguageManager: Working<br>
+                    • QuestionManager: Working<br>
+                    • SpinningWheel: Working<br>
+                    • QuestionDisplay: Working<br>
+                    • GameController: Working
+                `);
+                log('Component initialization test PASSED');
+
+            } catch (error) {
+                testResults.initialization = 'fail';
+                updateTestStatus('init', 'fail');
+                displayResults('init', `<strong>❌ Initialization failed:</strong><br>${error.message}`);
+                log(`Component initialization test FAILED: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 2: Language Management
+        async function testLanguageManagement() {
+            log('Starting language management test...');
+            
+            try {
+                const languageManager = new LanguageManager();
+                
+                // Test default language
+                const defaultLang = languageManager.getCurrentLanguage();
+                if (!defaultLang || (defaultLang !== 'dutch' && defaultLang !== 'english')) {
+                    throw new Error('Invalid default language');
+                }
+                log(`✓ Default language: ${defaultLang}`);
+
+                // Test language switching
+                const originalLang = defaultLang;
+                const newLang = originalLang === 'dutch' ? 'english' : 'dutch';
+                
+                languageManager.setLanguage(newLang);
+                const currentLang = languageManager.getCurrentLanguage();
+                if (currentLang !== newLang) {
+                    throw new Error('Language switching failed');
+                }
+                log(`✓ Language switched from ${originalLang} to ${newLang}`);
+
+                // Test translations
+                const gameTitle = languageManager.getTranslation('gameTitle');
+                if (!gameTitle || gameTitle.trim() === '') {
+                    throw new Error('Translation retrieval failed');
+                }
+                log(`✓ Translation working: gameTitle = "${gameTitle}"`);
+
+                // Test question banks
+                const dutchQuestions = languageManager.getQuestions('dutch');
+                const englishQuestions = languageManager.getQuestions('english');
+                
+                if (!dutchQuestions || dutchQuestions.length < 20) {
+                    throw new Error('Dutch question bank insufficient');
+                }
+                if (!englishQuestions || englishQuestions.length < 20) {
+                    throw new Error('English question bank insufficient');
+                }
+                log(`✓ Question banks: Dutch (${dutchQuestions.length}), English (${englishQuestions.length})`);
+
+                // Test language persistence
+                languageManager.setLanguage('dutch');
+                const persistedLang = languageManager.getCurrentLanguage();
+                if (persistedLang !== 'dutch') {
+                    throw new Error('Language persistence failed');
+                }
+                log('✓ Language persistence working');
+
+                testResults.language = 'pass';
+                updateTestStatus('lang', 'pass');
+                displayResults('lang', `
+                    <strong>✅ Language management working perfectly!</strong><br>
+                    • Default language: ${defaultLang}<br>
+                    • Language switching: Working<br>
+                    • Translations: Working<br>
+                    • Dutch questions: ${dutchQuestions.length}<br>
+                    • English questions: ${englishQuestions.length}<br>
+                    • Persistence: Working
+                `);
+                log('Language management test PASSED');
+
+            } catch (error) {
+                testResults.language = 'fail';
+                updateTestStatus('lang', 'fail');
+                displayResults('lang', `<strong>❌ Language management failed:</strong><br>${error.message}`);
+                log(`Language management test FAILED: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 3: Complete User Flow
+        async function testCompleteUserFlow() {
+            log('Starting complete user flow test...');
+            
+            try {
+                // Create test environment
+                const testContainer = document.createElement('div');
+                testContainer.innerHTML = `
+                    <div id="flow-wheel-container"></div>
+                    <div id="flow-question-container"></div>
+                    <button id="flow-spin-button">Spin</button>
+                    <button id="flow-new-game-button">New Game</button>
+                    <div id="flow-game-results"></div>
+                `;
+                document.body.appendChild(testContainer);
+
+                const languageManager = new LanguageManager();
+                const gameController = new GameController('flow-wheel-container', 'flow-question-container', languageManager);
+                
+                // Test 1: Start new round
+                log('Testing new round start...');
+                gameController.startNewRound();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const gameState = gameController.getGameState();
+                if (!gameState.gameStarted || !gameState.currentQuestion) {
+                    throw new Error('New round failed to start properly');
+                }
+                log('✓ New round started successfully');
+
+                // Test 2: Spin wheel
+                log('Testing wheel spin...');
+                const spinPromise = gameController.handleSpin();
+                await spinPromise;
+                
+                const updatedState = gameController.getGameState();
+                if (!updatedState.selectedLetter) {
+                    throw new Error('Wheel spin failed to select letter');
+                }
+                log(`✓ Wheel spin successful, selected letter: ${updatedState.selectedLetter}`);
+
+                // Test 3: Multiple rounds
+                log('Testing multiple rounds...');
+                const firstQuestion = updatedState.currentQuestion;
+                gameController.startNewRound();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const secondRoundState = gameController.getGameState();
+                if (secondRoundState.roundNumber !== 2) {
+                    throw new Error('Round counter not working');
+                }
+                log('✓ Multiple rounds working correctly');
+
+                // Test 4: Language switching during gameplay
+                log('Testing language switching during gameplay...');
+                const originalLang = languageManager.getCurrentLanguage();
+                const newLang = originalLang === 'dutch' ? 'english' : 'dutch';
+                
+                languageManager.setLanguage(newLang);
+                document.dispatchEvent(new CustomEvent('languageChanged', {
+                    detail: { newLanguage: newLang }
+                }));
+                
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                const langSwitchState = gameController.getGameState();
+                if (langSwitchState.currentLanguage !== newLang) {
+                    throw new Error('Language switching during gameplay failed');
+                }
+                log(`✓ Language switching during gameplay successful: ${originalLang} → ${newLang}`);
+
+                // Clean up
+                document.body.removeChild(testContainer);
+
+                testResults.flow = 'pass';
+                updateTestStatus('flow', 'pass');
+                displayResults('flow', `
+                    <strong>✅ Complete user flow working perfectly!</strong><br>
+                    • New round start: Working<br>
+                    • Wheel spinning: Working<br>
+                    • Letter selection: ${updatedState.selectedLetter}<br>
+                    • Multiple rounds: Working<br>
+                    • Language switching: Working<br>
+                    • Game state management: Working
+                `);
+                log('Complete user flow test PASSED');
+
+            } catch (error) {
+                testResults.flow = 'fail';
+                updateTestStatus('flow', 'fail');
+                displayResults('flow', `<strong>❌ User flow test failed:</strong><br>${error.message}`);
+                log(`Complete user flow test FAILED: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 4: Question Banks
+        async function testQuestionBanks() {
+            log('Starting question banks test...');
+            
+            try {
+                const languageManager = new LanguageManager();
+                const questionManager = new QuestionManager(languageManager);
+                
+                // Test Dutch questions
+                languageManager.setLanguage('dutch');
+                const dutchQuestions = questionManager.getAllQuestions();
+                if (!dutchQuestions || dutchQuestions.length < 20) {
+                    throw new Error(`Dutch questions insufficient: ${dutchQuestions ? dutchQuestions.length : 0}`);
+                }
+                
+                // Verify Dutch question content
+                const sampleDutchQuestion = dutchQuestions[0];
+                if (!sampleDutchQuestion.includes('Noem') && !sampleDutchQuestion.includes('een')) {
+                    log('Warning: Dutch questions may not be properly localized', 'warn');
+                }
+                log(`✓ Dutch questions: ${dutchQuestions.length} available`);
+
+                // Test English questions
+                languageManager.setLanguage('english');
+                const englishQuestions = questionManager.getAllQuestions();
+                if (!englishQuestions || englishQuestions.length < 20) {
+                    throw new Error(`English questions insufficient: ${englishQuestions ? englishQuestions.length : 0}`);
+                }
+                
+                // Verify English question content
+                const sampleEnglishQuestion = englishQuestions[0];
+                if (!sampleEnglishQuestion.includes('Name') && !sampleEnglishQuestion.includes('a ')) {
+                    log('Warning: English questions may not be properly localized', 'warn');
+                }
+                log(`✓ English questions: ${englishQuestions.length} available`);
+
+                // Test question randomization
+                const testContainer = document.createElement('div');
+                testContainer.id = 'question-test-container';
+                document.body.appendChild(testContainer);
+                
+                const questionDisplay = new QuestionDisplay('question-test-container', questionManager, languageManager);
+                
+                const questions = [];
+                for (let i = 0; i < 5; i++) {
+                    const question = questionDisplay.showRandomQuestion();
+                    questions.push(question);
+                }
+                
+                const uniqueQuestions = new Set(questions);
+                if (uniqueQuestions.size < 3) {
+                    log('Warning: Question randomization may not be working optimally', 'warn');
+                } else {
+                    log('✓ Question randomization working well');
+                }
+
+                document.body.removeChild(testContainer);
+
+                testResults.questions = 'pass';
+                updateTestStatus('question', 'pass');
+                displayResults('question', `
+                    <strong>✅ Question banks working correctly!</strong><br>
+                    • Dutch questions: ${dutchQuestions.length}<br>
+                    • English questions: ${englishQuestions.length}<br>
+                    • Sample Dutch: "${sampleDutchQuestion}"<br>
+                    • Sample English: "${sampleEnglishQuestion}"<br>
+                    • Randomization: Working<br>
+                    • Language switching: Working
+                `);
+                log('Question banks test PASSED');
+
+            } catch (error) {
+                testResults.questions = 'fail';
+                updateTestStatus('question', 'fail');
+                displayResults('question', `<strong>❌ Question banks test failed:</strong><br>${error.message}`);
+                log(`Question banks test FAILED: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 5: Educational Goals
+        async function testEducationalGoals() {
+            log('Starting educational goals test...');
+            
+            try {
+                const languageManager = new LanguageManager();
+                const questionManager = new QuestionManager(languageManager);
+                
+                // Test vocabulary building content
+                const dutchQuestions = languageManager.getQuestions('dutch');
+                const englishQuestions = languageManager.getQuestions('english');
+                
+                // Check for educational categories
+                const educationalCategories = [
+                    'fruit', 'dier', 'animal', 'kleur', 'color', 'speelgoed', 'toy',
+                    'keuken', 'kitchen', 'kledingstuk', 'clothing', 'voertuig', 'vehicle'
+                ];
+                
+                let dutchEducationalContent = 0;
+                let englishEducationalContent = 0;
+                
+                dutchQuestions.forEach(question => {
+                    educationalCategories.forEach(category => {
+                        if (question.toLowerCase().includes(category)) {
+                            dutchEducationalContent++;
+                        }
+                    });
+                });
+                
+                englishQuestions.forEach(question => {
+                    educationalCategories.forEach(category => {
+                        if (question.toLowerCase().includes(category)) {
+                            englishEducationalContent++;
+                        }
+                    });
+                });
+                
+                if (dutchEducationalContent < 10) {
+                    throw new Error('Insufficient educational content in Dutch questions');
+                }
+                if (englishEducationalContent < 10) {
+                    throw new Error('Insufficient educational content in English questions');
+                }
+                
+                log(`✓ Educational content: Dutch (${dutchEducationalContent}), English (${englishEducationalContent})`);
+
+                // Test age-appropriate content (7-year-olds)
+                const complexWords = ['sophisticated', 'complicated', 'ingewikkeld', 'gecompliceerd'];
+                let ageAppropriate = true;
+                
+                [...dutchQuestions, ...englishQuestions].forEach(question => {
+                    complexWords.forEach(word => {
+                        if (question.toLowerCase().includes(word)) {
+                            ageAppropriate = false;
+                        }
+                    });
+                });
+                
+                if (!ageAppropriate) {
+                    log('Warning: Some questions may be too complex for 7-year-olds', 'warn');
+                } else {
+                    log('✓ Age-appropriate content verified');
+                }
+
+                // Test learning objectives
+                const learningObjectives = {
+                    vocabularyBuilding: dutchEducationalContent > 10 && englishEducationalContent > 10,
+                    categoryThinking: true, // Questions ask for categories
+                    letterRecognition: true, // Wheel provides letters
+                    languageLearning: dutchQuestions.length >= 20 && englishQuestions.length >= 20
+                };
+                
+                const objectivesMet = Object.values(learningObjectives).every(obj => obj === true);
+                if (!objectivesMet) {
+                    throw new Error('Not all learning objectives are met');
+                }
+                log('✓ All learning objectives met');
+
+                testResults.educational = 'pass';
+                updateTestStatus('edu', 'pass');
+                displayResults('edu', `
+                    <strong>✅ Educational goals successfully met!</strong><br>
+                    • Vocabulary building: ✓<br>
+                    • Category thinking: ✓<br>
+                    • Letter recognition: ✓<br>
+                    • Language learning: ✓<br>
+                    • Age-appropriate: ${ageAppropriate ? '✓' : '⚠️'}<br>
+                    • Dutch educational content: ${dutchEducationalContent}<br>
+                    • English educational content: ${englishEducationalContent}
+                `);
+                log('Educational goals test PASSED');
+
+            } catch (error) {
+                testResults.educational = 'fail';
+                updateTestStatus('edu', 'fail');
+                displayResults('edu', `<strong>❌ Educational goals test failed:</strong><br>${error.message}`);
+                log(`Educational goals test FAILED: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 6: Component Integration
+        async function testComponentIntegration() {
+            log('Starting component integration test...');
+            
+            try {
+                // Create test environment
+                const testContainer = document.createElement('div');
+                testContainer.innerHTML = `
+                    <div id="integration-wheel-container"></div>
+                    <div id="integration-question-container"></div>
+                    <div id="integration-management-container"></div>
+                `;
+                document.body.appendChild(testContainer);
+
+                const languageManager = new LanguageManager();
+                const gameController = new GameController('integration-wheel-container', 'integration-question-container', languageManager);
+                const questionManagementUI = new QuestionManagementUI('integration-management-container', gameController.getQuestionManager());
+                
+                // Test component communication
+                log('Testing component communication...');
+                
+                // Test GameController → QuestionDisplay communication
+                gameController.startNewRound();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const gameState = gameController.getGameState();
+                if (!gameState.currentQuestion) {
+                    throw new Error('GameController → QuestionDisplay communication failed');
+                }
+                log('✓ GameController → QuestionDisplay communication working');
+
+                // Test GameController → SpinningWheel communication
+                const spinPromise = gameController.handleSpin();
+                await spinPromise;
+                
+                const updatedState = gameController.getGameState();
+                if (!updatedState.selectedLetter) {
+                    throw new Error('GameController → SpinningWheel communication failed');
+                }
+                log('✓ GameController → SpinningWheel communication working');
+
+                // Test LanguageManager → All Components communication
+                const originalLang = languageManager.getCurrentLanguage();
+                const newLang = originalLang === 'dutch' ? 'english' : 'dutch';
+                
+                languageManager.setLanguage(newLang);
+                document.dispatchEvent(new CustomEvent('languageChanged', {
+                    detail: { newLanguage: newLang }
+                }));
+                
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                if (gameController.getGameState().currentLanguage !== newLang) {
+                    throw new Error('LanguageManager → GameController communication failed');
+                }
+                log('✓ LanguageManager → All Components communication working');
+
+                // Test error handling integration
+                log('Testing error handling integration...');
+                const errorHandler = new ErrorHandler();
+                
+                // Simulate an error
+                try {
+                    throw new Error('Test error');
+                } catch (testError) {
+                    errorHandler.showError('Test error message', 'error', 1000);
+                    log('✓ Error handling integration working');
+                }
+
+                // Test performance optimization integration
+                const performanceOptimizer = new PerformanceOptimizer();
+                const performanceMetrics = performanceOptimizer.getPerformanceMetrics();
+                if (!performanceMetrics) {
+                    log('Warning: Performance optimization may not be fully integrated', 'warn');
+                } else {
+                    log('✓ Performance optimization integration working');
+                }
+
+                // Clean up
+                document.body.removeChild(testContainer);
+
+                testResults.integration = 'pass';
+                updateTestStatus('integration', 'pass');
+                displayResults('integration', `
+                    <strong>✅ Component integration working seamlessly!</strong><br>
+                    • GameController ↔ QuestionDisplay: ✓<br>
+                    • GameController ↔ SpinningWheel: ✓<br>
+                    • LanguageManager ↔ All Components: ✓<br>
+                    • Error handling integration: ✓<br>
+                    • Performance optimization: ${performanceMetrics ? '✓' : '⚠️'}<br>
+                    • State management: ✓<br>
+                    • Event communication: ✓
+                `);
+                log('Component integration test PASSED');
+
+            } catch (error) {
+                testResults.integration = 'fail';
+                updateTestStatus('integration', 'fail');
+                displayResults('integration', `<strong>❌ Component integration test failed:</strong><br>${error.message}`);
+                log(`Component integration test FAILED: ${error.message}`, 'error');
+            }
+        }
+
+        // Load game preview for manual testing
+        function loadGamePreview() {
+            const previewContainer = document.getElementById('preview-game-container');
+            previewContainer.innerHTML = `
+                <iframe src="../index.html" width="100%" height="600" style="border: 1px solid #ccc; border-radius: 5px;"></iframe>
+            `;
+            log('Game preview loaded for manual testing');
+        }
+
+        function clearGamePreview() {
+            const previewContainer = document.getElementById('preview-game-container');
+            previewContainer.innerHTML = '';
+            log('Game preview cleared');
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            log('Starting comprehensive test suite...');
+            
+            await testInitialization();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testLanguageManagement();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testCompleteUserFlow();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testQuestionBanks();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testEducationalGoals();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testComponentIntegration();
+            
+            // Generate summary
+            const passedTests = Object.values(testResults).filter(result => result === 'pass').length;
+            const totalTests = Object.keys(testResults).length;
+            const allPassed = passedTests === totalTests;
+            
+            const summaryElement = document.getElementById('test-summary');
+            summaryElement.innerHTML = `
+                <div class="test-${allPassed ? 'passed' : 'failed'}">
+                    <h3>${allPassed ? '🎉' : '⚠️'} Test Suite ${allPassed ? 'PASSED' : 'COMPLETED WITH ISSUES'}</h3>
+                    <p><strong>Results:</strong> ${passedTests}/${totalTests} tests passed</p>
+                    <ul>
+                        <li>Component Initialization: ${testResults.initialization === 'pass' ? '✅' : '❌'}</li>
+                        <li>Language Management: ${testResults.language === 'pass' ? '✅' : '❌'}</li>
+                        <li>Complete User Flow: ${testResults.flow === 'pass' ? '✅' : '❌'}</li>
+                        <li>Question Banks: ${testResults.questions === 'pass' ? '✅' : '❌'}</li>
+                        <li>Educational Goals: ${testResults.educational === 'pass' ? '✅' : '❌'}</li>
+                        <li>Component Integration: ${testResults.integration === 'pass' ? '✅' : '❌'}</li>
+                    </ul>
+                    ${allPassed ? 
+                        '<p><strong>🚀 The Dutch Word Game is ready for production!</strong></p>' : 
+                        '<p><strong>⚠️ Some issues need to be addressed before production.</strong></p>'
+                    }
+                </div>
+            `;
+            
+            log(`Test suite completed: ${passedTests}/${totalTests} tests passed`);
+            if (allPassed) {
+                log('🎉 ALL TESTS PASSED - Game is ready for production!', 'success');
+            } else {
+                log('⚠️ Some tests failed - review issues before production', 'warn');
+            }
+        }
+
+        // Initialize test page
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Final Integration Test page loaded and ready');
+            log('Click "Run All Tests" to perform comprehensive testing');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Selection UI Test - Pim Pam Pet</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/main-game.css">
+    <link rel="stylesheet" href="../css/language-selection.css">
+    
+    <style>
+        /* Test-specific styles */
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #4CAF50;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .test-button:hover {
+            background: #2980b9;
+        }
+        
+        .status-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .status-display.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-display.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .log-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        
+        .current-language {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="game-header">
+            <h1 class="game-title">Language Selection UI Test</h1>
+            <div class="header-controls">
+                <!-- Language toggle button will be inserted here -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Current Status</h3>
+            <div class="status-display" id="statusDisplay">
+                <p><strong>Current Language:</strong> <span class="current-language" id="currentLanguage">Loading...</span></p>
+                <p><strong>Component Status:</strong> <span id="componentStatus">Initializing...</span></p>
+                <p><strong>Last Action:</strong> <span id="lastAction">None</span></p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <button class="test-button" onclick="testShowInitialSelection()">Show Initial Language Selection</button>
+            <button class="test-button" onclick="testToggleLanguage()">Toggle Language</button>
+            <button class="test-button" onclick="testSetDutch()">Set Dutch</button>
+            <button class="test-button" onclick="testSetEnglish()">Set English</button>
+            <button class="test-button" onclick="testResetLanguage()">Reset to Default</button>
+            <button class="test-button" onclick="clearStorage()">Clear Storage</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>UI Text Updates Test</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>Sample Game Elements</h4>
+                    <button class="game-button spin-btn">SPIN THE WHEEL!</button>
+                    <button class="game-button new-game-btn secondary">NEW GAME</button>
+                    <button class="manage-questions-btn">MANAGE</button>
+                </div>
+                <div>
+                    <h4>Translation Test</h4>
+                    <div id="translationTest">
+                        <p><strong>Game Title:</strong> <span id="testGameTitle">-</span></p>
+                        <p><strong>Spin Button:</strong> <span id="testSpinButton">-</span></p>
+                        <p><strong>New Game:</strong> <span id="testNewGame">-</span></p>
+                        <p><strong>Manage:</strong> <span id="testManage">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Event Log</h3>
+            <button class="test-button" onclick="clearLog()">Clear Log</button>
+            <div class="log-output" id="logOutput">
+                <div>Test initialized. Waiting for actions...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Keyboard Navigation Test</h3>
+            <p>When the language selection modal is open:</p>
+            <ul>
+                <li><strong>Tab/Shift+Tab:</strong> Navigate between language options</li>
+                <li><strong>Arrow Keys:</strong> Navigate between options</li>
+                <li><strong>Enter/Space:</strong> Select language</li>
+                <li><strong>Escape:</strong> Close modal (defaults to Dutch)</li>
+            </ul>
+            <p><em>Open the modal and test keyboard navigation!</em></p>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/LanguageManager.js"></script>
+    <script src="../js/LanguageSelectionUI.js"></script>
+    
+    <script>
+        // Test variables
+        let languageManager;
+        let languageSelectionUI;
+        let logCount = 0;
+        
+        // Initialize test
+        function initializeTest() {
+            try {
+                // Create language manager
+                languageManager = new LanguageManager();
+                log('✓ LanguageManager created successfully');
+                
+                // Create language selection UI
+                languageSelectionUI = new LanguageSelectionUI('test-container', languageManager);
+                log('✓ LanguageSelectionUI created successfully');
+                
+                // Set up event listeners
+                document.addEventListener('languageChanged', handleLanguageChange);
+                log('✓ Event listeners set up');
+                
+                // Update initial status
+                updateStatus();
+                updateTranslationTest();
+                
+                log('✓ Test initialization complete');
+                
+            } catch (error) {
+                logError('✗ Test initialization failed: ' + error.message);
+                updateComponentStatus('Error: ' + error.message, 'error');
+            }
+        }
+        
+        // Event handlers
+        function handleLanguageChange(event) {
+            const { newLanguage, previousLanguage } = event.detail;
+            log(`🔄 Language changed: ${previousLanguage} → ${newLanguage}`);
+            updateStatus();
+            updateTranslationTest();
+            updateLastAction(`Language changed to ${newLanguage}`);
+        }
+        
+        // Test functions
+        function testShowInitialSelection() {
+            try {
+                languageSelectionUI.showInitialSelection();
+                log('📱 Initial language selection modal shown');
+                updateLastAction('Showed initial selection modal');
+            } catch (error) {
+                logError('✗ Failed to show initial selection: ' + error.message);
+            }
+        }
+        
+        function testToggleLanguage() {
+            try {
+                const oldLanguage = languageManager.getCurrentLanguage();
+                const newLanguage = languageManager.toggleLanguage();
+                languageSelectionUI.updateToggleButton();
+                languageSelectionUI.updateUIText();
+                log(`🔄 Language toggled: ${oldLanguage} → ${newLanguage}`);
+                updateStatus();
+                updateTranslationTest();
+                updateLastAction(`Toggled to ${newLanguage}`);
+            } catch (error) {
+                logError('✗ Failed to toggle language: ' + error.message);
+            }
+        }
+        
+        function testSetDutch() {
+            try {
+                languageSelectionUI.handleLanguageChange('dutch');
+                log('🇳🇱 Language set to Dutch');
+                updateLastAction('Set language to Dutch');
+            } catch (error) {
+                logError('✗ Failed to set Dutch: ' + error.message);
+            }
+        }
+        
+        function testSetEnglish() {
+            try {
+                languageSelectionUI.handleLanguageChange('english');
+                log('🇬🇧 Language set to English');
+                updateLastAction('Set language to English');
+            } catch (error) {
+                logError('✗ Failed to set English: ' + error.message);
+            }
+        }
+        
+        function testResetLanguage() {
+            try {
+                languageManager.resetToDefault();
+                languageSelectionUI.updateToggleButton();
+                languageSelectionUI.updateUIText();
+                log('🔄 Language reset to default (Dutch)');
+                updateStatus();
+                updateTranslationTest();
+                updateLastAction('Reset to default language');
+            } catch (error) {
+                logError('✗ Failed to reset language: ' + error.message);
+            }
+        }
+        
+        function clearStorage() {
+            try {
+                localStorage.removeItem('pim-pam-pet-language');
+                log('🗑️ Language preference cleared from storage');
+                updateLastAction('Cleared storage');
+                
+                // Reinitialize to test first-time behavior
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } catch (error) {
+                logError('✗ Failed to clear storage: ' + error.message);
+            }
+        }
+        
+        // Status update functions
+        function updateStatus() {
+            const currentLang = languageManager.getCurrentLanguage();
+            const isReady = languageSelectionUI.isReady();
+            
+            document.getElementById('currentLanguage').textContent = currentLang;
+            updateComponentStatus(isReady ? 'Ready' : 'Not Ready', isReady ? 'success' : 'error');
+        }
+        
+        function updateComponentStatus(status, type = 'normal') {
+            const statusElement = document.getElementById('componentStatus');
+            const statusDisplay = document.getElementById('statusDisplay');
+            
+            statusElement.textContent = status;
+            
+            // Update status display styling
+            statusDisplay.className = 'status-display';
+            if (type === 'error') {
+                statusDisplay.classList.add('error');
+            } else if (type === 'success') {
+                statusDisplay.classList.add('success');
+            }
+        }
+        
+        function updateLastAction(action) {
+            document.getElementById('lastAction').textContent = action;
+        }
+        
+        function updateTranslationTest() {
+            try {
+                document.getElementById('testGameTitle').textContent = languageManager.getTranslation('gameTitle');
+                document.getElementById('testSpinButton').textContent = languageManager.getTranslation('spinButton');
+                document.getElementById('testNewGame').textContent = languageManager.getTranslation('newGameButton');
+                document.getElementById('testManage').textContent = languageManager.getTranslation('manageButton');
+            } catch (error) {
+                logError('✗ Failed to update translation test: ' + error.message);
+            }
+        }
+        
+        // Logging functions
+        function log(message) {
+            const logOutput = document.getElementById('logOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #95a5a6;">[${timestamp}]</span> ${message}`;
+            logOutput.appendChild(logEntry);
+            logOutput.scrollTop = logOutput.scrollHeight;
+            logCount++;
+        }
+        
+        function logError(message) {
+            const logOutput = document.getElementById('logOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #95a5a6;">[${timestamp}]</span> <span style="color: #e74c3c;">${message}</span>`;
+            logOutput.appendChild(logEntry);
+            logOutput.scrollTop = logOutput.scrollHeight;
+            logCount++;
+        }
+        
+        function clearLog() {
+            document.getElementById('logOutput').innerHTML = '<div>Log cleared.</div>';
+            logCount = 0;
+        }
+        
+        // Initialize test when page loads
+        document.addEventListener('DOMContentLoaded', initializeTest);
+        
+        // Add some helpful keyboard shortcuts for testing
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch (event.key) {
+                    case '1':
+                        event.preventDefault();
+                        testShowInitialSelection();
+                        break;
+                    case '2':
+                        event.preventDefault();
+                        testToggleLanguage();
+                        break;
+                    case '3':
+                        event.preventDefault();
+                        testSetDutch();
+                        break;
+                    case '4':
+                        event.preventDefault();
+                        testSetEnglish();
+                        break;
+                }
+            }
+        });
+        
+        // Add visual feedback for keyboard shortcuts
+        window.addEventListener('load', function() {
+            log('💡 Keyboard shortcuts available:');
+            log('   Ctrl+1: Show initial selection');
+            log('   Ctrl+2: Toggle language');
+            log('   Ctrl+3: Set Dutch');
+            log('   Ctrl+4: Set English');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Functionality Test - Nederlands Woordspel</title>
+    <link rel="stylesheet" href="../css/main-game.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .test-pass { background: #d4edda; color: #155724; }
+        .test-fail { background: #f8d7da; color: #721c24; }
+        .test-info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Button Functionality Test</h1>
+        <p>This page tests all the interactive button functionality for the Dutch Word Game.</p>
+        
+        <div class="test-section">
+            <h2>1. Button Visual Tests</h2>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <button class="game-button" id="test-spin-btn">Draai het Wiel!</button>
+                <button class="game-button secondary" id="test-new-game-btn">Nieuw Spel</button>
+                <button class="manage-questions-btn" id="test-manage-btn">Beheer Vragen</button>
+            </div>
+            <div id="visual-test-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Button State Tests</h2>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <button class="game-button" id="test-disabled-btn" disabled>Disabled Button</button>
+                <button class="game-button spinning" id="test-spinning-btn">Spinning Button</button>
+            </div>
+            <div id="state-test-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Animation Tests</h2>
+            <button class="game-button" id="animation-test-btn">Test Animations</button>
+            <div id="animation-test-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Interaction Tests</h2>
+            <div id="interaction-test-results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test Results Container
+        const testResults = {
+            visual: document.getElementById('visual-test-results'),
+            state: document.getElementById('state-test-results'),
+            animation: document.getElementById('animation-test-results'),
+            interaction: document.getElementById('interaction-test-results')
+        };
+
+        // Helper function to add test result
+        function addTestResult(container, message, passed) {
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+            div.textContent = `${passed ? '✓' : '✗'} ${message}`;
+            container.appendChild(div);
+        }
+
+        // Helper function to add info message
+        function addTestInfo(container, message) {
+            const div = document.createElement('div');
+            div.className = 'test-result test-info';
+            div.textContent = `ℹ ${message}`;
+            container.appendChild(div);
+        }
+
+        // Test 1: Visual Appearance
+        function testVisualAppearance() {
+            const spinBtn = document.getElementById('test-spin-btn');
+            const newGameBtn = document.getElementById('test-new-game-btn');
+            const manageBtn = document.getElementById('test-manage-btn');
+            
+            // Test button dimensions
+            const spinBtnRect = spinBtn.getBoundingClientRect();
+            addTestResult(testResults.visual, 
+                `Spin button height (${Math.round(spinBtnRect.height)}px) >= 48px`, 
+                spinBtnRect.height >= 48);
+            
+            addTestResult(testResults.visual, 
+                `Spin button width (${Math.round(spinBtnRect.width)}px) >= 160px`, 
+                spinBtnRect.width >= 160);
+            
+            // Test button styles
+            const spinBtnStyles = window.getComputedStyle(spinBtn);
+            addTestResult(testResults.visual, 
+                'Spin button has gradient background', 
+                spinBtnStyles.background.includes('gradient'));
+            
+            addTestResult(testResults.visual, 
+                'Spin button has rounded corners', 
+                parseInt(spinBtnStyles.borderRadius) > 20);
+            
+            // Test secondary button
+            const newGameBtnStyles = window.getComputedStyle(newGameBtn);
+            addTestResult(testResults.visual, 
+                'New game button has different color from spin button', 
+                newGameBtnStyles.background !== spinBtnStyles.background);
+        }
+
+        // Test 2: Button States
+        function testButtonStates() {
+            const disabledBtn = document.getElementById('test-disabled-btn');
+            const spinningBtn = document.getElementById('test-spinning-btn');
+            
+            // Test disabled state
+            addTestResult(testResults.state, 
+                'Disabled button has disabled attribute', 
+                disabledBtn.disabled);
+            
+            const disabledStyles = window.getComputedStyle(disabledBtn);
+            addTestResult(testResults.state, 
+                'Disabled button has reduced opacity', 
+                parseFloat(disabledStyles.opacity) < 1);
+            
+            // Test spinning state
+            addTestResult(testResults.state, 
+                'Spinning button has spinning class', 
+                spinningBtn.classList.contains('spinning'));
+        }
+
+        // Test 3: Animations
+        function testAnimations() {
+            const animationBtn = document.getElementById('animation-test-btn');
+            let animationTests = 0;
+            let passedTests = 0;
+            
+            // Test hover animation
+            animationBtn.addEventListener('mouseenter', function() {
+                setTimeout(() => {
+                    const transform = window.getComputedStyle(animationBtn).transform;
+                    animationTests++;
+                    if (transform !== 'none') {
+                        passedTests++;
+                        addTestResult(testResults.animation, 'Hover animation applies transform', true);
+                    } else {
+                        addTestResult(testResults.animation, 'Hover animation applies transform', false);
+                    }
+                }, 100);
+            });
+            
+            // Test click animation
+            animationBtn.addEventListener('click', function() {
+                this.classList.add('button-pressed');
+                setTimeout(() => {
+                    animationTests++;
+                    if (this.classList.contains('button-pressed')) {
+                        passedTests++;
+                        addTestResult(testResults.animation, 'Click animation class applied', true);
+                    } else {
+                        addTestResult(testResults.animation, 'Click animation class applied', false);
+                    }
+                    
+                    // Remove class after test
+                    setTimeout(() => {
+                        this.classList.remove('button-pressed');
+                    }, 200);
+                }, 50);
+            });
+            
+            addTestInfo(testResults.animation, 'Hover over and click the button above to test animations');
+        }
+
+        // Test 4: Interaction
+        function testInteractions() {
+            let clickCount = 0;
+            
+            // Test all buttons for click events
+            const buttons = document.querySelectorAll('.game-button, .manage-questions-btn');
+            buttons.forEach((button, index) => {
+                if (!button.disabled) {
+                    button.addEventListener('click', function() {
+                        clickCount++;
+                        addTestResult(testResults.interaction, 
+                            `Button ${index + 1} click event fired`, true);
+                    });
+                }
+            });
+            
+            addTestInfo(testResults.interaction, 'Click any enabled button to test click events');
+            
+            // Test keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    addTestResult(testResults.interaction, 'Keyboard navigation (Tab) detected', true);
+                }
+            });
+            
+            addTestInfo(testResults.interaction, 'Press Tab to test keyboard navigation');
+        }
+
+        // Run all tests
+        document.addEventListener('DOMContentLoaded', function() {
+            testVisualAppearance();
+            testButtonStates();
+            testAnimations();
+            testInteractions();
+            
+            addTestInfo(testResults.interaction, 'All automatic tests completed. Manual interaction tests available above.');
+        });
+    </script>
+</body>
+</html>
+</content>

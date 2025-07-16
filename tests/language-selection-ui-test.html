@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Selection UI Test</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../css/main-game.css">
+    <link rel="stylesheet" href="../css/language-selection.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .test-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        
+        .test-button:hover {
+            background: #1976D2;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .game-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .game-title {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        .game-subtitle {
+            font-size: 16px;
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .header-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .manage-questions-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .manage-questions-btn:hover {
+            background: linear-gradient(135deg, #F57C00, #E65100);
+            transform: translateY(-2px);
+        }
+        
+        .current-language {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .test-log {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>Language Selection UI Test</h1>
+            <p>Testing the LanguageSelectionUI component functionality</p>
+        </div>
+
+        <!-- Mock Game Header -->
+        <div class="game-header">
+            <h1 class="game-title">Nederlands Woordspel</h1>
+            <p class="game-subtitle">Pim Pam Pet - Draai het wiel en bedenk een woord!</p>
+            <div class="header-controls">
+                <button class="manage-questions-btn" id="manage-questions-btn">
+                    Beheer Vragen
+                </button>
+                <!-- Language toggle button will be inserted here -->
+            </div>
+        </div>
+
+        <div class="current-language" id="current-language">
+            Current Language: <span id="language-display">Loading...</span>
+        </div>
+
+        <div class="test-section">
+            <h3>Manual Tests</h3>
+            <button class="test-button" onclick="showInitialSelection()">Show Initial Language Selection</button>
+            <button class="test-button" onclick="showLanguageSwitcher()">Show Language Switcher</button>
+            <button class="test-button" onclick="toggleLanguage()">Toggle Language</button>
+            <button class="test-button" onclick="resetLanguagePreference()">Reset Language Preference</button>
+            <button class="test-button" onclick="getUIState()">Get UI State</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Automated Tests</h3>
+            <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+            <div id="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test Log</h3>
+            <div class="test-log" id="test-log"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="../js/LanguageManager.js"></script>
+    <script src="../js/LanguageSelectionUI.js"></script>
+
+    <script>
+        let languageManager;
+        let languageSelectionUI;
+        let testLog = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            testLog.push(logMessage);
+            console.log(logMessage);
+            updateTestLog();
+        }
+
+        function updateTestLog() {
+            const logElement = document.getElementById('test-log');
+            logElement.textContent = testLog.slice(-20).join('\n'); // Show last 20 messages
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateLanguageDisplay() {
+            const languageDisplay = document.getElementById('language-display');
+            if (languageManager) {
+                const currentLang = languageManager.getCurrentLanguage();
+                languageDisplay.textContent = currentLang === 'dutch' ? 'Nederlands' : 'English';
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            resultsDiv.appendChild(statusDiv);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (statusDiv.parentNode) {
+                    statusDiv.parentNode.removeChild(statusDiv);
+                }
+            }, 5000);
+        }
+
+        // Manual test functions
+        function showInitialSelection() {
+            log('Manual test: showInitialSelection()');
+            if (languageSelectionUI) {
+                languageSelectionUI.showInitialSelection();
+                showStatus('Initial selection modal should be displayed', 'info');
+            } else {
+                showStatus('LanguageSelectionUI not initialized', 'error');
+            }
+        }
+
+        function showLanguageSwitcher() {
+            log('Manual test: showLanguageSwitcher()');
+            if (languageSelectionUI) {
+                languageSelectionUI.showLanguageSwitcher();
+                showStatus('Language switcher modal should be displayed', 'info');
+            } else {
+                showStatus('LanguageSelectionUI not initialized', 'error');
+            }
+        }
+
+        function toggleLanguage() {
+            log('Manual test: toggleLanguage()');
+            if (languageManager) {
+                const oldLang = languageManager.getCurrentLanguage();
+                const newLang = languageManager.toggleLanguage();
+                updateLanguageDisplay();
+                showStatus(`Language toggled from ${oldLang} to ${newLang}`, 'success');
+                log(`Language toggled: ${oldLang} -> ${newLang}`);
+            } else {
+                showStatus('LanguageManager not initialized', 'error');
+            }
+        }
+
+        function resetLanguagePreference() {
+            log('Manual test: resetLanguagePreference()');
+            localStorage.removeItem('pim-pam-pet-language');
+            if (languageManager) {
+                languageManager.resetToDefault();
+                updateLanguageDisplay();
+                showStatus('Language preference reset to default (Dutch)', 'success');
+                log('Language preference reset');
+            }
+        }
+
+        function getUIState() {
+            log('Manual test: getUIState()');
+            if (languageSelectionUI) {
+                const state = languageSelectionUI.getState();
+                console.log('UI State:', state);
+                showStatus(`UI State logged to console`, 'info');
+                log(`UI State: ${JSON.stringify(state, null, 2)}`);
+            } else {
+                showStatus('LanguageSelectionUI not initialized', 'error');
+            }
+        }
+
+        // Automated test functions
+        async function runAllTests() {
+            log('Starting automated tests...');
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<h4>Running Tests...</h4>';
+
+            const tests = [
+                testInitialization,
+                testLanguageManager,
+                testToggleButton,
+                testModalFunctionality,
+                testLanguageChange,
+                testEventHandling
+            ];
+
+            let passed = 0;
+            let failed = 0;
+
+            for (const test of tests) {
+                try {
+                    await test();
+                    passed++;
+                    log(`✓ ${test.name} passed`);
+                } catch (error) {
+                    failed++;
+                    log(`✗ ${test.name} failed: ${error.message}`);
+                    console.error(`Test ${test.name} failed:`, error);
+                }
+            }
+
+            const summary = `Tests completed: ${passed} passed, ${failed} failed`;
+            log(summary);
+            showStatus(summary, failed === 0 ? 'success' : 'error');
+        }
+
+        function testInitialization() {
+            if (!languageManager) throw new Error('LanguageManager not initialized');
+            if (!languageSelectionUI) throw new Error('LanguageSelectionUI not initialized');
+            if (!languageSelectionUI.getState().isInitialized) throw new Error('LanguageSelectionUI not properly initialized');
+        }
+
+        function testLanguageManager() {
+            const currentLang = languageManager.getCurrentLanguage();
+            if (!currentLang) throw new Error('No current language set');
+            
+            const translation = languageManager.getTranslation('gameTitle');
+            if (!translation) throw new Error('Translation not found');
+            
+            const questions = languageManager.getQuestions();
+            if (!questions || questions.length === 0) throw new Error('No questions found');
+        }
+
+        function testToggleButton() {
+            const toggleButton = document.getElementById('language-toggle-btn');
+            if (!toggleButton) throw new Error('Toggle button not found in DOM');
+            
+            const ariaLabel = toggleButton.getAttribute('aria-label');
+            if (!ariaLabel) throw new Error('Toggle button missing aria-label');
+            
+            const flagElement = toggleButton.querySelector('.language-flag');
+            const nameElement = toggleButton.querySelector('.language-name');
+            if (!flagElement || !nameElement) throw new Error('Toggle button missing flag or name elements');
+        }
+
+        function testModalFunctionality() {
+            const modal = document.querySelector('.language-modal-overlay');
+            if (!modal) throw new Error('Language modal not found in DOM');
+            
+            const modalContent = modal.querySelector('.language-modal-content');
+            if (!modalContent) throw new Error('Modal content not found');
+            
+            const languageOptions = modal.querySelectorAll('.language-option');
+            if (languageOptions.length !== 2) throw new Error('Expected 2 language options, found ' + languageOptions.length);
+            
+            // Test modal attributes
+            if (modal.getAttribute('role') !== 'dialog') throw new Error('Modal missing dialog role');
+            if (modal.getAttribute('aria-modal') !== 'true') throw new Error('Modal missing aria-modal attribute');
+        }
+
+        async function testLanguageChange() {
+            const originalLang = languageManager.getCurrentLanguage();
+            
+            // Test language change via manager
+            const newLang = originalLang === 'dutch' ? 'english' : 'dutch';
+            const success = languageManager.setLanguage(newLang);
+            if (!success) throw new Error('Failed to set language');
+            
+            const currentLang = languageManager.getCurrentLanguage();
+            if (currentLang !== newLang) throw new Error(`Language not changed: expected ${newLang}, got ${currentLang}`);
+            
+            // Restore original language
+            languageManager.setLanguage(originalLang);
+        }
+
+        function testEventHandling() {
+            // Test that event listeners are properly set up
+            const toggleButton = document.getElementById('language-toggle-btn');
+            if (!toggleButton) throw new Error('Toggle button not found');
+            
+            // Create a mock event
+            const clickEvent = new Event('click');
+            
+            // This should not throw an error
+            try {
+                toggleButton.dispatchEvent(clickEvent);
+            } catch (error) {
+                throw new Error('Toggle button click event handling failed: ' + error.message);
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                log('Initializing test environment...');
+                
+                // Initialize LanguageManager
+                languageManager = new LanguageManager();
+                log('LanguageManager initialized');
+                
+                // Initialize LanguageSelectionUI
+                languageSelectionUI = new LanguageSelectionUI('test-container', languageManager);
+                log('LanguageSelectionUI initialized');
+                
+                // Update language display
+                updateLanguageDisplay();
+                
+                // Listen for language change events
+                document.addEventListener('languageChanged', function(event) {
+                    log(`Language changed event received: ${event.detail.previousLanguage} -> ${event.detail.newLanguage}`);
+                    updateLanguageDisplay();
+                    showStatus(`Language changed to ${event.detail.newLanguage}`, 'success');
+                });
+                
+                log('Test environment ready');
+                showStatus('Test environment initialized successfully', 'success');
+                
+            } catch (error) {
+                log('Error initializing test environment: ' + error.message);
+                console.error('Initialization error:', error);
+                showStatus('Failed to initialize test environment: ' + error.message, 'error');
+            }
+        });
+
+        // Handle errors
+        window.addEventListener('error', function(event) {
+            log('JavaScript error: ' + event.error.message);
+            showStatus('JavaScript error occurred - check console', 'error');
+        });
+    </script>
+</body>
+</html>

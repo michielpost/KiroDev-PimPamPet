@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Placeholder Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .placeholder {
+            width: 800px;
+            height: 600px;
+            margin: 20px 0;
+            border: 3px dashed #666;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .placeholder h2 {
+            font-size: 2.5em;
+            margin: 0 0 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .placeholder p {
+            font-size: 1.2em;
+            margin: 10px 20px;
+            line-height: 1.5;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .placeholder ul {
+            text-align: left;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+        .placeholder li {
+            margin: 5px 0;
+        }
+        .download-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 10px;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Screenshot Placeholder Generator for Pim Pam Pet</h1>
+    
+    <div class="instructions">
+        <h2>Instructions</h2>
+        <p>This page generates placeholder images for the game screenshots. Right-click on each placeholder and "Save image as..." to create the placeholder files, or use the download buttons.</p>
+        <p>Replace these placeholders with actual screenshots of the game interface once captured.</p>
+    </div>
+
+    <!-- Main Game Interface Placeholder -->
+    <div class="placeholder" id="main-interface">
+        <h2>Main Game Interface</h2>
+        <p><strong>File:</strong> main-game-interface.png</p>
+        <ul>
+            <li>✅ Game title "Nederlands Woordspel"</li>
+            <li>✅ Language toggle and manage buttons</li>
+            <li>✅ Question display area</li>
+            <li>✅ Spinning wheel with viewing window</li>
+            <li>✅ Game control buttons</li>
+        </ul>
+        <button class="download-btn" onclick="downloadPlaceholder('main-interface', 'main-game-interface.png')">Download Placeholder</button>
+    </div>
+
+    <!-- Language Selection Modal Placeholder -->
+    <div class="placeholder" id="language-modal" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <h2>Language Selection Modal</h2>
+        <p><strong>File:</strong> language-selection-modal.png</p>
+        <ul>
+            <li>✅ Semi-transparent modal overlay</li>
+            <li>✅ Language selection dialog</li>
+            <li>✅ "Nederlands" and "English" buttons</li>
+            <li>✅ Clean, centered design</li>
+        </ul>
+        <button class="download-btn" onclick="downloadPlaceholder('language-modal', 'language-selection-modal.png')">Download Placeholder</button>
+    </div>
+
+    <!-- Question Management Interface Placeholder -->
+    <div class="placeholder" id="question-management" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <h2>Question Management</h2>
+        <p><strong>File:</strong> question-management-interface.png</p>
+        <ul>
+            <li>✅ Question list with edit/delete buttons</li>
+            <li>✅ Add question form</li>
+            <li>✅ Dutch interface text</li>
+            <li>✅ Save/cancel controls</li>
+        </ul>
+        <button class="download-btn" onclick="downloadPlaceholder('question-management', 'question-management-interface.png')">Download Placeholder</button>
+    </div>
+
+    <!-- Game in Action Placeholder -->
+    <div class="placeholder" id="game-action" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <h2>Game in Action</h2>
+        <p><strong>File:</strong> game-in-action.png</p>
+        <ul>
+            <li>✅ Active question displayed</li>
+            <li>✅ Selected letter in wheel window</li>
+            <li>✅ Wheel stopped state</li>
+            <li>✅ Button states after spin</li>
+        </ul>
+        <button class="download-btn" onclick="downloadPlaceholder('game-action', 'game-in-action.png')">Download Placeholder</button>
+    </div>
+
+    <!-- English Language Mode Placeholder -->
+    <div class="placeholder" id="english-mode" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+        <h2>English Language Mode</h2>
+        <p><strong>File:</strong> english-language-mode.png</p>
+        <ul>
+            <li>✅ "Dutch Word Game" title</li>
+            <li>✅ English question text</li>
+            <li>✅ English button labels</li>
+            <li>✅ "Nederlands" language toggle</li>
+        </ul>
+        <button class="download-btn" onclick="downloadPlaceholder('english-mode', 'english-language-mode.png')">Download Placeholder</button>
+    </div>
+
+    <script>
+        function downloadPlaceholder(elementId, filename) {
+            const element = document.getElementById(elementId);
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 600;
+            
+            // Get computed styles
+            const styles = window.getComputedStyle(element);
+            const background = styles.background;
+            
+            // Fill background
+            if (background.includes('linear-gradient')) {
+                // Simple gradient approximation
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#667eea');
+                gradient.addColorStop(1, '#764ba2');
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = '#667eea';
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add border
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 6;
+            ctx.setLineDash([20, 10]);
+            ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
+            
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 40px Arial';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            const title = element.querySelector('h2').textContent;
+            ctx.fillText(title, canvas.width / 2, 150);
+            
+            ctx.font = '24px Arial';
+            ctx.fillText('PLACEHOLDER IMAGE', canvas.width / 2, 200);
+            
+            ctx.font = '18px Arial';
+            ctx.fillText('Replace with actual screenshot', canvas.width / 2, 240);
+            
+            const fileText = element.querySelector('p').textContent;
+            ctx.fillText(fileText, canvas.width / 2, 280);
+            
+            // Add checklist items
+            const items = element.querySelectorAll('li');
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            let y = 320;
+            items.forEach(item => {
+                if (y < 550) {
+                    ctx.fillText(item.textContent, 100, y);
+                    y += 25;
+                }
+            });
+            
+            // Download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        // Add right-click context menu override
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.closest('.placeholder')) {
+                // Allow right-click on placeholders for "Save image as..."
+                return true;
+            }
+        });
+    </script>
+</body>
+</html>

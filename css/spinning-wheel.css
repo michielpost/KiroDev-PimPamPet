@@ -1,0 +1,683 @@
+/* Spinning Wheel Component Styles */
+
+.spinning-wheel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-height: 300px;
+}
+
+.wheel-wrapper {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Main wheel container with enhanced natural spinning and performance optimizations */
+.wheel {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFE082, #FFC107);
+    border: 8px solid #FF9800;
+    box-shadow: 
+        0 0 20px rgba(255, 152, 0, 0.3),
+        inset 0 0 20px rgba(255, 193, 7, 0.2);
+    transition: transform 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center center;
+    /* Performance optimizations */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    /* Optimize for GPU acceleration */
+    contain: layout style paint;
+}
+
+/* Individual letter elements with performance optimizations */
+.wheel-letter {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #1a1a1a; /* Enhanced contrast for accessibility */
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    border: 3px solid #4CAF50;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+    user-select: none;
+    /* Performance optimizations */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: layout style;
+}
+
+.wheel-letter:hover {
+    transform: translate(-50%, -50%) scale(1.1) rotate(0deg) !important;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    z-index: 10;
+}
+
+.wheel-letter.selected {
+    background: linear-gradient(135deg, #FF5722, #E64A19);
+    color: white;
+    border-color: #D84315;
+    transform: translate(-50%, -50%) scale(1.2) rotate(0deg) !important;
+    z-index: 15;
+    box-shadow: 0 4px 16px rgba(255, 87, 34, 0.4);
+}
+
+/* Viewing window that shows the selected letter */
+.viewing-window {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    border: 4px solid #2E7D32;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 4px 16px rgba(76, 175, 80, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    z-index: 20;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.window-pointer {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid #2E7D32;
+}
+
+.selected-letter-display {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+/* Letter reveal animation when wheel stops */
+.selected-letter-display.letter-reveal {
+    animation: letterReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes letterReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-180deg);
+        filter: blur(10px);
+    }
+    30% {
+        opacity: 0.7;
+        transform: scale(1.3) rotate(-60deg);
+        filter: blur(3px);
+    }
+    60% {
+        opacity: 0.9;
+        transform: scale(0.9) rotate(10deg);
+        filter: blur(1px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        filter: blur(0px);
+    }
+}
+
+
+
+/* Letter selection complete animation */
+.viewing-window.letter-selected {
+    animation: windowCelebration 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes windowCelebration {
+    0% {
+        transform: translateX(-50%) scale(1);
+        box-shadow: 
+            0 4px 16px rgba(76, 175, 80, 0.3),
+            inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+    25% {
+        transform: translateX(-50%) scale(1.1) rotate(5deg);
+        box-shadow: 
+            0 8px 24px rgba(76, 175, 80, 0.5),
+            inset 0 2px 4px rgba(255, 255, 255, 0.3),
+            0 0 40px rgba(76, 175, 80, 0.6);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.05) rotate(-3deg);
+        box-shadow: 
+            0 6px 20px rgba(76, 175, 80, 0.4),
+            inset 0 2px 4px rgba(255, 255, 255, 0.25),
+            0 0 30px rgba(76, 175, 80, 0.5);
+    }
+    75% {
+        transform: translateX(-50%) scale(1.02) rotate(1deg);
+        box-shadow: 
+            0 5px 18px rgba(76, 175, 80, 0.35),
+            inset 0 2px 4px rgba(255, 255, 255, 0.22),
+            0 0 25px rgba(76, 175, 80, 0.4);
+    }
+    100% {
+        transform: translateX(-50%) scale(1);
+        box-shadow: 
+            0 4px 16px rgba(76, 175, 80, 0.3),
+            inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Enhanced spinning animation states with natural deceleration */
+.wheel.spinning {
+    animation: wheelSpinGlow 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+               wheelSpinMotion 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes wheelSpinGlow {
+    0% {
+        filter: brightness(1) saturate(1);
+        box-shadow: 
+            0 0 20px rgba(255, 152, 0, 0.3),
+            inset 0 0 20px rgba(255, 193, 7, 0.2);
+    }
+    25% {
+        filter: brightness(1.3) saturate(1.4);
+        box-shadow: 
+            0 0 40px rgba(255, 152, 0, 0.6),
+            inset 0 0 30px rgba(255, 193, 7, 0.4),
+            0 0 60px rgba(255, 152, 0, 0.3);
+    }
+    50% {
+        filter: brightness(1.4) saturate(1.5);
+        box-shadow: 
+            0 0 50px rgba(255, 152, 0, 0.7),
+            inset 0 0 40px rgba(255, 193, 7, 0.5),
+            0 0 80px rgba(255, 152, 0, 0.4);
+    }
+    75% {
+        filter: brightness(1.2) saturate(1.3);
+        box-shadow: 
+            0 0 35px rgba(255, 152, 0, 0.5),
+            inset 0 0 25px rgba(255, 193, 7, 0.3),
+            0 0 50px rgba(255, 152, 0, 0.2);
+    }
+    100% {
+        filter: brightness(1) saturate(1);
+        box-shadow: 
+            0 0 20px rgba(255, 152, 0, 0.3),
+            inset 0 0 20px rgba(255, 193, 7, 0.2);
+    }
+}
+
+@keyframes wheelSpinMotion {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    20% {
+        transform: rotate(720deg) scale(1.02);
+    }
+    40% {
+        transform: rotate(1440deg) scale(1.01);
+    }
+    60% {
+        transform: rotate(2160deg) scale(1.005);
+    }
+    80% {
+        transform: rotate(2520deg) scale(1.002);
+    }
+    100% {
+        transform: rotate(2880deg) scale(1);
+    }
+}
+
+/* Pulse animation for selected letter display during spinning */
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* Enhanced spinning state for viewing window */
+.viewing-window.spinning-active {
+    animation: windowPulse 1s ease-in-out infinite;
+    box-shadow: 
+        0 4px 20px rgba(76, 175, 80, 0.5),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3),
+        0 0 30px rgba(76, 175, 80, 0.4);
+}
+
+@keyframes windowPulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.05);
+    }
+}
+
+/* Center hub of the wheel */
+.wheel::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border-radius: 50%;
+    border: 3px solid #1a252f;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    z-index: 5;
+}
+
+/* Wheel segments background (optional visual enhancement) */
+.wheel::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255, 255, 255, 0.1) 0deg,
+        rgba(255, 255, 255, 0.1) 16.36deg,
+        transparent 16.36deg,
+        transparent 32.72deg
+    );
+    pointer-events: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .spinning-wheel-container {
+        padding: 15px;
+        min-height: 250px;
+    }
+    
+    .wheel-wrapper {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .wheel {
+        width: 240px;
+        height: 240px;
+        border-width: 6px;
+    }
+    
+    .wheel-letter {
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+        border-width: 2px;
+    }
+    
+    .viewing-window {
+        width: 70px;
+        height: 70px;
+        top: -15px;
+    }
+    
+    .selected-letter-display {
+        font-size: 30px;
+    }
+    
+    .wheel::before {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .wheel::after {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .spinning-wheel-container {
+        padding: 10px;
+        min-height: 220px;
+    }
+    
+    .wheel-wrapper {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .wheel {
+        width: 200px;
+        height: 200px;
+        border-width: 4px;
+    }
+    
+    .wheel-letter {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+    
+    .viewing-window {
+        width: 60px;
+        height: 60px;
+        top: -12px;
+    }
+    
+    .selected-letter-display {
+        font-size: 24px;
+    }
+    
+    .wheel::before {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .wheel::after {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .wheel {
+        transition: none;
+    }
+    
+    .wheel.spinning {
+        animation: none;
+    }
+    
+    .wheel-letter {
+        transition: none;
+    }
+    
+    .selected-letter-display {
+        transition: none;
+    }
+}
+
+/* High contrast mode support - Enhanced for WCAG AAA compliance */
+@media (prefers-contrast: high) {
+    .wheel {
+        border-color: #000000;
+        background: #ffffff;
+        box-shadow: 0 0 0 2px #000000, 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .wheel-letter {
+        border-color: #000000;
+        background: #ffffff;
+        color: #000000;
+        box-shadow: 0 0 0 1px #000000;
+    }
+    
+    .wheel-letter.selected {
+        background: #000000;
+        color: #ffffff;
+        border-color: #ffffff;
+        box-shadow: 0 0 0 2px #ffffff, 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .viewing-window {
+        background: #000000;
+        border-color: #ffffff;
+        box-shadow: 0 0 0 2px #ffffff, 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .selected-letter-display {
+        color: #ffffff;
+        text-shadow: none;
+    }
+    
+    .window-pointer {
+        border-top-color: #000000;
+    }
+}
+
+/* Performance optimizations for different device capabilities */
+@media (max-width: 768px) {
+    /* Reduce animation complexity on mobile devices */
+    .wheel.spinning {
+        animation: wheelSpinMotion 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* Simplify hover effects on touch devices */
+    .wheel-letter:hover {
+        transform: translate(-50%, -50%) scale(1.05) rotate(0deg) !important;
+    }
+}
+
+/* Battery saving optimizations */
+@media (prefers-reduced-motion: reduce) {
+    /* Disable all animations and transitions */
+    .wheel,
+    .wheel-letter,
+    .selected-letter-display,
+    .viewing-window {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .wheel.spinning {
+        animation: none !important;
+        /* Provide immediate feedback without animation */
+        transform: rotate(720deg);
+    }
+    
+    .selected-letter-display.letter-reveal {
+        animation: none !important;
+    }
+    
+    .viewing-window.letter-selected {
+        animation: none !important;
+    }
+}
+
+/* Keyboard navigation support for accessibility */
+.wheel:focus-within {
+    outline: 3px solid #3498db;
+    outline-offset: 4px;
+    box-shadow: 0 0 0 8px rgba(52, 152, 219, 0.3);
+}
+
+.wheel-letter:focus {
+    outline: 3px solid #3498db;
+    outline-offset: 2px;
+    z-index: 20;
+}
+
+/* Screen reader support */
+.wheel[aria-label] {
+    /* Ensure wheel is properly labeled for screen readers */
+}
+
+.selected-letter-display[aria-live="polite"] {
+    /* Announce letter changes to screen readers */
+}
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+    .wheel-letter {
+        /* Larger touch targets */
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+    
+    .viewing-window {
+        /* Larger viewing window for touch devices */
+        width: 90px;
+        height: 90px;
+    }
+    
+    .selected-letter-display {
+        font-size: 40px;
+    }
+}
+
+/* Performance optimization for low-end devices */
+@media (max-width: 480px) and (max-height: 600px) {
+    /* Reduce visual complexity on small, low-end devices */
+    .wheel {
+        box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+    }
+    
+    .wheel-letter {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .viewing-window {
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+}
+
+/* Memory usage optimization */
+.wheel::after {
+    /* Limit gradient complexity on older devices */
+    background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255, 255, 255, 0.05) 0deg,
+        rgba(255, 255, 255, 0.05) 16.36deg,
+        transparent 16.36deg,
+        transparent 32.72deg
+    );
+}
+
+/* Optimize for different color gamuts */
+@media (color-gamut: p3) {
+    .wheel {
+        background: linear-gradient(135deg, color(display-p3 1 0.88 0.51), color(display-p3 1 0.76 0.03));
+    }
+}
+
+/* Optimize for different refresh rates */
+@media (update: fast) {
+    .wheel.spinning {
+        /* Use more complex animations on high refresh rate displays */
+        animation: wheelSpinGlow 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                   wheelSpinMotion 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+}
+
+@media (update: slow) {
+    .wheel.spinning {
+        /* Simplify animations on low refresh rate displays */
+        animation: wheelSpinMotion 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+}
+
+/* Optimize for different display types */
+@media (display-mode: fullscreen) {
+    .spinning-wheel-container {
+        /* Adjust for fullscreen mode */
+        padding: 30px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .spinning-wheel-container {
+        display: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .wheel {
+        background: linear-gradient(135deg, #B8860B, #DAA520);
+        border-color: #CD853F;
+    }
+    
+    .wheel-letter {
+        background: linear-gradient(135deg, #2c2c2c, #3c3c3c);
+        color: #ffffff;
+        border-color: #4CAF50;
+    }
+    
+    .wheel-letter.selected {
+        background: linear-gradient(135deg, #FF5722, #E64A19);
+        color: #ffffff;
+    }
+}
+
+/* Optimize for different input methods */
+@media (hover: none) {
+    .wheel-letter:hover {
+        /* Disable hover effects on devices without hover capability */
+        transform: translate(-50%, -50%) rotate(0deg) !important;
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        color: #1a1a1a;
+    }
+}
+
+/* Accessibility: Focus management */
+.wheel[tabindex="0"]:focus {
+    outline: 3px solid #3498db;
+    outline-offset: 4px;
+}
+
+/* Accessibility: High contrast borders */
+@media (prefers-contrast: high) {
+    .wheel-letter:focus {
+        outline: 4px solid #ffffff;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 8px #000000;
+    }
+}
+
+/* Performance: Optimize animations for different hardware */
+@supports (transform: translate3d(0, 0, 0)) {
+    .wheel,
+    .wheel-letter,
+    .viewing-window {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Performance: Use simpler animations on older browsers */
+@supports not (backdrop-filter: blur(4px)) {
+    .wheel.spinning {
+        animation: wheelSpinMotion 3.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+}

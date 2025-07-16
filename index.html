@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nederlands Woordspel - Pim Pam Pet</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main-game.css">
+    <link rel="stylesheet" href="css/spinning-wheel.css">
+    <link rel="stylesheet" href="css/question-management.css">
+    <link rel="stylesheet" href="css/language-selection.css">
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Spring naar hoofdinhoud</a>
+    
+    <!-- ARIA live regions for screen reader announcements -->
+    <div id="sr-announcements" class="sr-live-region" aria-live="polite" aria-atomic="true"></div>
+    <div id="sr-status" class="sr-live-region" aria-live="assertive" aria-atomic="true"></div>
+
+    <div class="game-container" role="application" aria-label="Nederlands Woordspel">
+        <!-- Game Header -->
+        <header class="game-header">
+            <h1 class="game-title">Nederlands Woordspel</h1>
+            <p class="game-subtitle">Pim Pam Pet - Draai het wiel en bedenk een woord!</p>
+            <div class="header-controls">
+                <button class="manage-questions-btn" id="manage-questions-btn" 
+                        aria-label="Beheer vragen - Open vraagbeheer interface"
+                        tabindex="0">
+                    Beheer Vragen
+                </button>
+                <!-- Language toggle button will be inserted here by LanguageSelectionUI -->
+            </div>
+        </header>
+
+        <!-- Round Display -->
+        <div class="round-display">
+            <span class="round-number" id="round-number">Klik op "Nieuw Spel" om te beginnen</span>
+        </div>
+
+        <!-- Error Display -->
+        <div class="error-display" id="error-display"></div>
+
+        <!-- Game Content -->
+        <main class="game-content" id="main-content">
+            <!-- Question Display Section -->
+            <section class="question-section" 
+                     role="region" 
+                     aria-labelledby="question-heading"
+                     tabindex="0"
+                     aria-describedby="question-description">
+                <h2 id="question-heading" class="sr-only">Huidige Vraag</h2>
+                <p id="question-description" class="sr-only">Dit is de vraag waarvoor je een woord moet bedenken</p>
+                <div id="question-container" aria-live="polite"></div>
+            </section>
+
+            <!-- Spinning Wheel Section -->
+            <section class="wheel-section" 
+                     role="region" 
+                     aria-labelledby="wheel-heading"
+                     tabindex="0"
+                     aria-describedby="wheel-description">
+                <h2 id="wheel-heading" class="sr-only">Draaiend Wiel</h2>
+                <p id="wheel-description" class="sr-only">Het wiel selecteert een willekeurige letter voor je antwoord</p>
+                <div id="wheel-container" aria-live="polite"></div>
+            </section>
+
+            <!-- Game Controls -->
+            <section class="controls-section" 
+                     role="region" 
+                     aria-labelledby="controls-heading">
+                <h2 id="controls-heading" class="sr-only">Spelbesturing</h2>
+                <button class="game-button" 
+                        id="spin-button" 
+                        disabled
+                        aria-label="Draai het wiel om een letter te selecteren"
+                        aria-describedby="spin-button-help">
+                    Draai het Wiel!
+                </button>
+                <div id="spin-button-help" class="sr-only">
+                    Druk op deze knop om het wiel te laten draaien en een willekeurige letter te selecteren
+                </div>
+                
+                <button class="game-button secondary" 
+                        id="new-game-button"
+                        aria-label="Start een nieuwe ronde van het spel"
+                        aria-describedby="new-game-help">
+                    Nieuw Spel
+                </button>
+                <div id="new-game-help" class="sr-only">
+                    Druk op deze knop om een nieuwe ronde te beginnen met een nieuwe vraag
+                </div>
+            </section>
+
+            <!-- Results Display -->
+            <section class="results-section" 
+                     id="game-results"
+                     role="region"
+                     aria-labelledby="results-heading"
+                     aria-live="polite">
+                <h2 id="results-heading" class="sr-only">Spelresultaten</h2>
+                <!-- Results will be populated by JavaScript -->
+            </section>
+        </main>
+
+        <!-- Question Management UI Container -->
+        <div id="question-management-container"></div>
+    </div>
+
+    <!-- JavaScript Files - Load in proper order -->
+    <script src="js/ErrorHandler.js"></script>
+    <script src="js/PerformanceOptimizer.js"></script>
+    <script src="js/LanguageManager.js"></script>
+    <script src="js/LanguageSelectionUI.js"></script>
+    <script src="js/QuestionManager.js"></script>
+    <script src="js/QuestionDisplay.js"></script>
+    <script src="js/SpinningWheel.js"></script>
+    <script src="js/QuestionManagementUI.js"></script>
+    <script src="js/GameController.js"></script>
+
+    <!-- Game Initialization -->
+    <script>
+        // Initialize the game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Initialize error handler first
+                const errorHandler = new ErrorHandler();
+                window.errorHandler = errorHandler;
+                
+                // Initialize performance optimizer for enhanced accessibility and performance
+                const performanceOptimizer = new PerformanceOptimizer();
+                window.performanceOptimizer = performanceOptimizer;
+                
+                // Initialize language manager
+                const languageManager = new LanguageManager();
+                window.languageManager = languageManager;
+                
+                // Initialize language selection UI
+                const languageSelectionUI = new LanguageSelectionUI('game-container', languageManager);
+                window.languageSelectionUI = languageSelectionUI;
+                
+                // Show initial language selection if no preference exists
+                languageSelectionUI.showInitialSelection();
+                
+                // Listen for language changes and update UI
+                document.addEventListener('languageChanged', function(event) {
+                    try {
+                        const { newLanguage } = event.detail;
+                        console.log('Language changed to:', newLanguage);
+                        
+                        // Validate event data
+                        if (!newLanguage || !languageManager.isLanguageSupported(newLanguage)) {
+                            console.error('Invalid language in change event:', newLanguage);
+                            return;
+                        }
+                        
+                        // Update all UI text elements
+                        updateUITextForLanguage(newLanguage);
+                        
+                        // Update document language attribute
+                        document.documentElement.lang = newLanguage === 'dutch' ? 'nl' : 'en';
+                        
+                        // Update page title
+                        document.title = languageManager.getTranslation('gameTitle') + ' - Pim Pam Pet';
+                        
+                        console.log('Language change completed successfully');
+                    } catch (error) {
+                        console.error('Error handling language change event:', error);
+                        // Don't show error to user as this might be the cause of the "problem switching languages" message
+                    }
+                });
+                
+                // Check browser support and enable graceful degradation if needed
+                const browserSupport = errorHandler.getBrowserSupport();
+                console.log('Browser support:', browserSupport);
+                
+                // Enable graceful degradation for older browsers
+                if (!browserSupport.cssTransitions || !browserSupport.cssTransforms || !browserSupport.promises) {
+                    errorHandler.enableGracefulDegradation();
+                }
+                
+                // Initialize game controller with proper container IDs and language manager
+                const gameController = new GameController('wheel-container', 'question-container', languageManager);
+                
+                // Perform initial health check
+                const healthCheck = gameController.performHealthCheck();
+                console.log('Initial health check:', healthCheck);
+                
+                if (healthCheck.overall === 'critical') {
+                    throw new Error('Critical issues detected during initialization');
+                }
+                
+                // Initialize question management UI
+                const questionManagementUI = new QuestionManagementUI(
+                    'question-management-container', 
+                    gameController.getQuestionManager()
+                );
+                
+                // Set up manage questions button
+                const manageQuestionsBtn = document.getElementById('manage-questions-btn');
+                if (manageQuestionsBtn) {
+                    manageQuestionsBtn.addEventListener('click', function() {
+                        try {
+                            // Add visual feedback for button press
+                            gameController.addButtonPressEffect('manage-questions-btn');
+                            questionManagementUI.showManagementInterface();
+                        } catch (error) {
+                            console.error('Error opening question management:', error);
+                            errorHandler.showError('Er is een probleem met het openen van vraagbeheer. Probeer het opnieuw!', 'error', 4000);
+                        }
+                    });
+                }
+                
+                // Set up periodic health checks
+                setInterval(() => {
+                    if (window.gameController) {
+                        const healthCheck = window.gameController.performHealthCheck();
+                        if (healthCheck.overall === 'critical') {
+                            console.error('Critical health check failure:', healthCheck);
+                            errorHandler.handleCriticalError(
+                                new Error('Game health check failed'),
+                                'Het spel heeft een probleem gedetecteerd. Ververs de pagina om door te gaan.'
+                            );
+                        }
+                    }
+                }, 30000); // Check every 30 seconds
+                
+                // Make components globally accessible for debugging
+                window.gameController = gameController;
+                window.questionManagementUI = questionManagementUI;
+                window.errorHandler = errorHandler;
+                
+                console.log('Nederlands Woordspel initialized successfully!');
+                console.log('Game statistics:', gameController.getGameStats());
+                
+                // Show success message for older browsers using fallback mode
+                if (errorHandler.isFallbackMode()) {
+                    errorHandler.showError('Het spel draait in compatibiliteitsmodus voor je browser.', 'info', 5000);
+                }
+                
+            } catch (error) {
+                console.error('Failed to initialize game:', error);
+                
+                // Try to use error handler if available
+                if (window.errorHandler) {
+                    window.errorHandler.handleCriticalError(error, 'Het spel kan niet worden gestart. Ververs de pagina om opnieuw te proberen.');
+                } else {
+                    // Fallback error display
+                    const errorDisplay = document.getElementById('error-display');
+                    if (errorDisplay) {
+                        errorDisplay.textContent = 'Er is een fout opgetreden bij het laden van het spel. Ververs de pagina om opnieuw te proberen.';
+                        errorDisplay.style.display = 'block';
+                        errorDisplay.style.backgroundColor = '#f44336';
+                        errorDisplay.style.color = 'white';
+                        errorDisplay.style.padding = '15px';
+                        errorDisplay.style.borderRadius = '10px';
+                        errorDisplay.style.margin = '10px';
+                        errorDisplay.style.textAlign = 'center';
+                        errorDisplay.style.fontSize = '18px';
+                    }
+                }
+            }
+        });
+
+        // Handle page visibility changes to pause/resume game if needed
+        document.addEventListener('visibilitychange', function() {
+            try {
+                if (window.gameController) {
+                    const gameState = window.gameController.getGameState();
+                    if (document.hidden && gameState.isSpinning) {
+                        console.log('Page hidden during spin - game state preserved');
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling visibility change:', error);
+            }
+        });
+
+        // Handle window resize for responsive adjustments
+        window.addEventListener('resize', function() {
+            try {
+                // Trigger any necessary responsive adjustments
+                if (window.gameController && window.gameController.getSpinningWheel()) {
+                    // The wheel component handles its own responsive behavior
+                    console.log('Window resized - responsive adjustments applied');
+                }
+            } catch (error) {
+                console.error('Error handling window resize:', error);
+            }
+        });
+
+        // Handle unhandled errors globally
+        window.addEventListener('error', function(event) {
+            console.error('Unhandled error:', event.error);
+            if (window.errorHandler) {
+                window.errorHandler.showError(
+                    'Er is een onverwachte fout opgetreden. Als het probleem aanhoudt, ververs de pagina.',
+                    'error',
+                    6000
+                );
+            }
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            if (window.errorHandler) {
+                window.errorHandler.showError(
+                    'Er is een probleem opgetreden met een bewerking. Probeer het opnieuw.',
+                    'warning',
+                    5000
+                );
+            }
+            event.preventDefault(); // Prevent the default browser behavior
+        });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(event) {
+            try {
+                // Detect keyboard navigation and add class for focus styling
+                if (event.key === 'Tab') {
+                    document.body.classList.add('keyboard-navigation');
+                }
+
+                // Keyboard shortcuts for game controls
+                if (window.gameController) {
+                    const gameState = window.gameController.getGameState();
+                    
+                    switch(event.key) {
+                        case ' ': // Spacebar to spin wheel
+                        case 'Enter': // Enter to spin wheel
+                            if (event.target.id === 'spin-button' || 
+                                (event.target.classList.contains('wheel-section') && gameState.gameStarted && !gameState.isSpinning)) {
+                                event.preventDefault();
+                                const spinButton = document.getElementById('spin-button');
+                                if (spinButton && !spinButton.disabled) {
+                                    spinButton.click();
+                                    // Announce action to screen readers
+                                    announceToScreenReader('Wiel wordt gedraaid...');
+                                }
+                            }
+                            break;
+                            
+                        case 'n': // 'N' for new game
+                        case 'N':
+                            if (event.ctrlKey || event.altKey) {
+                                event.preventDefault();
+                                const newGameButton = document.getElementById('new-game-button');
+                                if (newGameButton) {
+                                    newGameButton.click();
+                                    announceToScreenReader('Nieuwe ronde gestart');
+                                }
+                            }
+                            break;
+                            
+                        case 'Escape': // Escape to close modals
+                            if (window.questionManagementUI) {
+                                window.questionManagementUI.hideManagementInterface();
+                            }
+                            break;
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling keyboard navigation:', error);
+            }
+        });
+
+        // Remove keyboard navigation class on mouse use
+        document.addEventListener('mousedown', function() {
+            document.body.classList.remove('keyboard-navigation');
+        });
+
+        // Screen reader announcement function
+        function announceToScreenReader(message) {
+            const announcements = document.getElementById('sr-announcements');
+            if (announcements) {
+                announcements.textContent = message;
+                // Clear after announcement
+                setTimeout(() => {
+                    announcements.textContent = '';
+                }, 1000);
+            }
+        }
+
+        // Status announcement function for important updates
+        function announceStatus(message) {
+            const status = document.getElementById('sr-status');
+            if (status) {
+                status.textContent = message;
+                setTimeout(() => {
+                    status.textContent = '';
+                }, 2000);
+            }
+        }
+
+        // Function to update UI text for language changes
+        function updateUITextForLanguage(language) {
+            try {
+                // Check if language manager is available
+                if (!window.languageManager) {
+                    console.warn('Language manager not available during UI text update');
+                    return;
+                }
+                
+                // Update game title and subtitle
+                const gameTitle = document.querySelector('.game-title');
+                if (gameTitle) {
+                    gameTitle.textContent = window.languageManager.getTranslation('gameTitle');
+                }
+                
+                // Update game subtitle
+                const gameSubtitle = document.querySelector('.game-subtitle');
+                if (gameSubtitle) {
+                    if (language === 'dutch') {
+                        gameSubtitle.textContent = 'Pim Pam Pet - Draai het wiel en bedenk een woord!';
+                    } else {
+                        gameSubtitle.textContent = 'Pim Pam Pet - Spin the wheel and think of a word!';
+                    }
+                }
+                
+                // Update buttons
+                const spinButton = document.getElementById('spin-button');
+                if (spinButton) {
+                    spinButton.textContent = window.languageManager.getTranslation('spinButton');
+                    spinButton.setAttribute('aria-label', window.languageManager.getTranslation('spinButtonHelp'));
+                }
+                
+                const newGameButton = document.getElementById('new-game-button');
+                if (newGameButton) {
+                    // Let the GameController handle the button text based on game state
+                    if (window.gameController) {
+                        window.gameController.updateNewGameButtonText();
+                    } else {
+                        // Fallback if GameController is not available
+                        newGameButton.textContent = window.languageManager.getTranslation('newGameButton');
+                        const newGameLabel = language === 'dutch' ? 
+                            'Start een nieuwe ronde van het spel' : 
+                            'Start a new round of the game';
+                        newGameButton.setAttribute('aria-label', newGameLabel);
+                    }
+                }
+                
+                const manageButton = document.getElementById('manage-questions-btn');
+                if (manageButton) {
+                    manageButton.textContent = window.languageManager.getTranslation('manageButton');
+                    const manageLabel = language === 'dutch' ? 
+                        'Beheer vragen - Open vraagbeheer interface' : 
+                        'Manage questions - Open question management interface';
+                    manageButton.setAttribute('aria-label', manageLabel);
+                }
+                
+                // Update round display
+                const roundNumber = document.getElementById('round-number');
+                if (roundNumber && (roundNumber.textContent.includes('Klik op') || roundNumber.textContent.includes('Click'))) {
+                    roundNumber.textContent = window.languageManager.getTranslation('clickNewGameToStart');
+                }
+                
+                // Update accessibility labels
+                const skipLink = document.querySelector('.skip-link');
+                if (skipLink) {
+                    skipLink.textContent = window.languageManager.getTranslation('skipToMainContent');
+                }
+                
+                // Update ARIA labels for sections
+                const gameContainer = document.querySelector('.game-container');
+                if (gameContainer) {
+                    gameContainer.setAttribute('aria-label', window.languageManager.getTranslation('gameTitle'));
+                }
+                
+                // Update screen reader text
+                const questionHeading = document.getElementById('question-heading');
+                if (questionHeading) {
+                    questionHeading.textContent = window.languageManager.getTranslation('currentQuestion');
+                }
+                
+                const wheelHeading = document.getElementById('wheel-heading');
+                if (wheelHeading) {
+                    wheelHeading.textContent = window.languageManager.getTranslation('spinningWheel');
+                }
+                
+                const controlsHeading = document.getElementById('controls-heading');
+                if (controlsHeading) {
+                    controlsHeading.textContent = window.languageManager.getTranslation('gameControls');
+                }
+                
+                const resultsHeading = document.getElementById('results-heading');
+                if (resultsHeading) {
+                    resultsHeading.textContent = window.languageManager.getTranslation('gameResults');
+                }
+                
+                // Update help text
+                const questionDescription = document.getElementById('question-description');
+                if (questionDescription) {
+                    questionDescription.textContent = window.languageManager.getTranslation('questionDescription');
+                }
+                
+                const wheelDescription = document.getElementById('wheel-description');
+                if (wheelDescription) {
+                    wheelDescription.textContent = window.languageManager.getTranslation('wheelDescription');
+                }
+                
+                const spinButtonHelp = document.getElementById('spin-button-help');
+                if (spinButtonHelp) {
+                    spinButtonHelp.textContent = window.languageManager.getTranslation('spinButtonHelp');
+                }
+                
+                const newGameHelp = document.getElementById('new-game-help');
+                if (newGameHelp) {
+                    newGameHelp.textContent = window.languageManager.getTranslation('newGameHelp');
+                }
+                
+                console.log('UI text updated for language:', language);
+                
+            } catch (error) {
+                console.error('Error updating UI text for language:', error);
+            }
+        }
+
+        // Make announcement functions globally available
+        window.announceToScreenReader = announceToScreenReader;
+        window.announceStatus = announceStatus;
+        window.updateUITextForLanguage = updateUITextForLanguage;
+    </script>
+</body>
+</html>

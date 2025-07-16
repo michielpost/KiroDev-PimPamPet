@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Management Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-summary {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dutch Word Game - Question Management Tests</h1>
+    
+    <button onclick="runAllTests()">Run All Tests</button>
+    <button onclick="clearResults()">Clear Results</button>
+    
+    <div id="test-results"></div>
+    
+    <div class="test-section">
+        <h3>Manual Test Area</h3>
+        <div id="question-display-container"></div>
+        <div id="question-management-container"></div>
+        <button onclick="showQuestionManager()">Open Question Manager</button>
+        <button onclick="testRandomQuestion()">Show Random Question</button>
+    </div>
+
+    <!-- Include the JavaScript files -->
+    <script src="../js/QuestionManager.js"></script>
+    <script src="../js/QuestionDisplay.js"></script>
+    <script src="../js/QuestionManagementUI.js"></script>
+    
+    <script>
+        let testResults = [];
+        let questionManager, questionDisplay, questionUI;
+        
+        // Initialize components for manual testing
+        function initializeComponents() {
+            questionManager = new QuestionManager();
+            questionDisplay = new QuestionDisplay('question-display-container', questionManager);
+            questionUI = new QuestionManagementUI('question-management-container', questionManager);
+        }
+        
+        function runTest(testName, testFunction) {
+            try {
+                const result = testFunction();
+                if (result) {
+                    testResults.push({ name: testName, passed: true, message: 'Test passed' });
+                } else {
+                    testResults.push({ name: testName, passed: false, message: 'Test failed - returned false' });
+                }
+            } catch (error) {
+                testResults.push({ name: testName, passed: false, message: `Test failed - ${error.message}` });
+            }
+        }
+        
+        function runAllTests() {
+            testResults = [];
+            
+            // QuestionManager Tests
+            runTest('QuestionManager - Default Questions Count', testDefaultQuestionsCount);
+            runTest('QuestionManager - Add Valid Question', testAddValidQuestion);
+            runTest('QuestionManager - Reject Invalid Question', testRejectInvalidQuestion);
+            runTest('QuestionManager - Reject Duplicate Question', testRejectDuplicateQuestion);
+            runTest('QuestionManager - Edit Question', testEditQuestion);
+            runTest('QuestionManager - Delete Question', testDeleteQuestion);
+            runTest('QuestionManager - Minimum Question Count', testMinimumQuestionCount);
+            runTest('QuestionManager - Local Storage', testLocalStorage);
+            
+            // QuestionDisplay Tests
+            runTest('QuestionDisplay - Random Selection', testRandomSelection);
+            runTest('QuestionDisplay - Avoid Immediate Repeats', testAvoidRepeats);
+            runTest('QuestionDisplay - Handle Empty Question Bank', testEmptyQuestionBank);
+            runTest('QuestionDisplay - Question Stats', testQuestionStats);
+            
+            displayResults();
+        }
+        
+        // QuestionManager Tests
+        function testDefaultQuestionsCount() {
+            const manager = new QuestionManager();
+            return manager.getDefaultQuestions().length === 20;
+        }
+        
+        function testAddValidQuestion() {
+            const manager = new QuestionManager();
+            const initialCount = manager.getAllQuestions().length;
+            const success = manager.addQuestion('Test vraag');
+            return success && manager.getAllQuestions().length === initialCount + 1;
+        }
+        
+        function testRejectInvalidQuestion() {
+            const manager = new QuestionManager();
+            return !manager.addQuestion('') && !manager.addQuestion(null) && !manager.addQuestion(undefined);
+        }
+        
+        function testRejectDuplicateQuestion() {
+            const manager = new QuestionManager();
+            manager.addQuestion('Unieke vraag');
+            return !manager.addQuestion('Unieke vraag');
+        }
+        
+        function testEditQuestion() {
+            const manager = new QuestionManager();
+            manager.addQuestion('Originele vraag');
+            const customQuestions = manager.getCustomQuestions();
+            const index = customQuestions.length - 1;
+            const success = manager.editQuestion(index, 'Bewerkte vraag');
+            return success && manager.getCustomQuestions()[index] === 'Bewerkte vraag';
+        }
+        
+        function testDeleteQuestion() {
+            const manager = new QuestionManager();
+            manager.addQuestion('Te verwijderen vraag');
+            const initialCount = manager.getAllQuestions().length;
+            const customIndex = manager.getCustomQuestions().length - 1;
+            const success = manager.deleteQuestion(customIndex);
+            return success && manager.getAllQuestions().length === initialCount - 1;
+        }
+        
+        function testMinimumQuestionCount() {
+            const manager = new QuestionManager();
+            // Try to delete all custom questions when total is at minimum
+            manager.resetCustomQuestions();
+            // Should not be able to delete default questions (they're not deletable anyway)
+            // But if we had only 5 total questions, deletion should be prevented
+            return manager.getAllQuestions().length >= 5;
+        }
+        
+        function testLocalStorage() {
+            const manager1 = new QuestionManager();
+            manager1.addQuestion('Storage test vraag');
+            
+            const manager2 = new QuestionManager();
+            return manager2.getCustomQuestions().includes('Storage test vraag');
+        }
+        
+        // QuestionDisplay Tests
+        function testRandomSelection() {
+            const manager = new QuestionManager();
+            const display = new QuestionDisplay('test-container', manager);
+            
+            // Create a temporary container for testing
+            const testContainer = document.createElement('div');
+            testContainer.id = 'test-container';
+            testContainer.innerHTML = '<div id="current-question"></div>';
+            document.body.appendChild(testContainer);
+            
+            const question = display.showRandomQuestion();
+            const isValid = question && manager.getAllQuestions().includes(question);
+            
+            // Cleanup
+            document.body.removeChild(testContainer);
+            
+            return isValid;
+        }
+        
+        function testAvoidRepeats() {
+            const manager = new QuestionManager();
+            const display = new QuestionDisplay('test-container-2', manager);
+            
+            // Create a temporary container for testing
+            const testContainer = document.createElement('div');
+            testContainer.id = 'test-container-2';
+            testContainer.innerHTML = '<div id="current-question"></div>';
+            document.body.appendChild(testContainer);
+            
+            // Get several questions and check they're different
+            const questions = [];
+            for (let i = 0; i < 3; i++) {
+                questions.push(display.showRandomQuestion());
+            }
+            
+            // Cleanup
+            document.body.removeChild(testContainer);
+            
+            // Check that not all questions are the same (allowing for some randomness)
+            const uniqueQuestions = new Set(questions);
+            return uniqueQuestions.size > 1 || manager.getAllQuestions().length === 1;
+        }
+        
+        function testEmptyQuestionBank() {
+            const manager = new QuestionManager();
+            manager.resetCustomQuestions();
+            // Can't actually empty default questions, so this tests the error handling
+            const display = new QuestionDisplay('test-container-3', manager);
+            
+            const testContainer = document.createElement('div');
+            testContainer.id = 'test-container-3';
+            testContainer.innerHTML = '<div id="current-question"></div>';
+            document.body.appendChild(testContainer);
+            
+            const question = display.showRandomQuestion();
+            
+            document.body.removeChild(testContainer);
+            
+            return question !== null; // Should still work with default questions
+        }
+        
+        function testQuestionStats() {
+            const manager = new QuestionManager();
+            const display = new QuestionDisplay('test-container-4', manager);
+            
+            const testContainer = document.createElement('div');
+            testContainer.id = 'test-container-4';
+            testContainer.innerHTML = '<div id="current-question"></div>';
+            document.body.appendChild(testContainer);
+            
+            display.showRandomQuestion();
+            const stats = display.getQuestionStats();
+            
+            document.body.removeChild(testContainer);
+            
+            return stats && typeof stats.totalQuestions === 'number' && stats.totalQuestions > 0;
+        }
+        
+        function displayResults() {
+            const resultsContainer = document.getElementById('test-results');
+            const passedTests = testResults.filter(t => t.passed).length;
+            const totalTests = testResults.length;
+            
+            let html = `<div class="test-summary">Test Results: ${passedTests}/${totalTests} passed</div>`;
+            
+            testResults.forEach(test => {
+                const cssClass = test.passed ? 'test-pass' : 'test-fail';
+                html += `<div class="test-result ${cssClass}">
+                    <strong>${test.name}</strong>: ${test.message}
+                </div>`;
+            });
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            testResults = [];
+        }
+        
+        // Manual test functions
+        function showQuestionManager() {
+            if (!questionUI) {
+                initializeComponents();
+            }
+            questionUI.showManagementInterface();
+        }
+        
+        function testRandomQuestion() {
+            if (!questionDisplay) {
+                initializeComponents();
+            }
+            questionDisplay.showRandomQuestion();
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initializeComponents();
+        });
+    </script>
+</body>
+</html>

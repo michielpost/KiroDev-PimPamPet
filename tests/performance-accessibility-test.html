@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance and Accessibility Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Performance and Accessibility Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Performance Optimizations Test</h2>
+        <div id="performance-results"></div>
+        <button onclick="testPerformanceOptimizations()">Run Performance Tests</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Accessibility Features Test</h2>
+        <div id="accessibility-results"></div>
+        <button onclick="testAccessibilityFeatures()">Run Accessibility Tests</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Keyboard Navigation Test</h2>
+        <div id="keyboard-results"></div>
+        <button onclick="testKeyboardNavigation()">Run Keyboard Tests</button>
+        <p><em>Use Tab, Enter, Space, and arrow keys to test navigation</em></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>High Contrast Test</h2>
+        <div id="contrast-results"></div>
+        <button onclick="testHighContrast()">Run Contrast Tests</button>
+    </div>
+    
+    <!-- Include the PerformanceOptimizer -->
+    <script src="../js/PerformanceOptimizer.js"></script>
+    
+    <script>
+        let performanceOptimizer;
+        
+        // Initialize performance optimizer
+        try {
+            performanceOptimizer = new PerformanceOptimizer();
+            console.log('Performance optimizer initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize performance optimizer:', error);
+        }
+        
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = `test-result ${type}`;
+            result.textContent = message;
+            container.appendChild(result);
+        }
+        
+        function testPerformanceOptimizations() {
+            const container = document.getElementById('performance-results');
+            container.innerHTML = '';
+            
+            // Test device capability detection
+            if (performanceOptimizer) {
+                const stats = performanceOptimizer.getPerformanceStats();
+                const capabilities = stats.deviceCapabilities;
+                
+                addResult('performance-results', `Device Memory: ${capabilities.deviceMemory}GB`, 'info');
+                addResult('performance-results', `Hardware Concurrency: ${capabilities.hardwareConcurrency} cores`, 'info');
+                addResult('performance-results', `Mobile Device: ${capabilities.isMobile}`, 'info');
+                addResult('performance-results', `Low-end Device: ${capabilities.isLowEndDevice}`, capabilities.isLowEndDevice ? 'fail' : 'pass');
+                addResult('performance-results', `Supports 3D Transforms: ${capabilities.supportsTransform3d}`, capabilities.supportsTransform3d ? 'pass' : 'fail');
+                addResult('performance-results', `Supports Backdrop Filter: ${capabilities.supportsBackdropFilter}`, capabilities.supportsBackdropFilter ? 'pass' : 'info');
+                addResult('performance-results', `Performance Mode: ${stats.performanceMode}`, 'info');
+                
+                // Test CSS optimizations
+                const body = document.body;
+                const hasPerformanceClass = body.classList.contains(`performance-${stats.performanceMode}`);
+                addResult('performance-results', `Performance CSS class applied: ${hasPerformanceClass}`, hasPerformanceClass ? 'pass' : 'fail');
+                
+                addResult('performance-results', 'Performance optimization tests completed', 'pass');
+            } else {
+                addResult('performance-results', 'Performance optimizer not available', 'fail');
+            }
+        }
+        
+        function testAccessibilityFeatures() {
+            const container = document.getElementById('accessibility-results');
+            container.innerHTML = '';
+            
+            if (performanceOptimizer) {
+                const stats = performanceOptimizer.getPerformanceStats();
+                const preferences = stats.accessibilityPreferences;
+                
+                addResult('accessibility-results', `Prefers Reduced Motion: ${preferences.prefersReducedMotion}`, 'info');
+                addResult('accessibility-results', `Prefers High Contrast: ${preferences.prefersHighContrast}`, 'info');
+                addResult('accessibility-results', `Screen Reader Detected: ${preferences.screenReaderDetected}`, 'info');
+                addResult('accessibility-results', `Using Keyboard: ${preferences.usingKeyboard}`, 'info');
+                addResult('accessibility-results', `Base Font Size: ${preferences.baseFontSize}px`, 'info');
+                
+                // Test ARIA live regions
+                const announcements = document.getElementById('sr-announcements');
+                const status = document.getElementById('sr-status');
+                
+                addResult('accessibility-results', `ARIA live regions present: ${announcements && status}`, (announcements && status) ? 'pass' : 'fail');
+                
+                // Test skip link
+                const skipLink = document.querySelector('.skip-link');
+                addResult('accessibility-results', `Skip link present: ${!!skipLink}`, skipLink ? 'pass' : 'info');
+                
+                addResult('accessibility-results', 'Accessibility feature tests completed', 'pass');
+            } else {
+                addResult('accessibility-results', 'Performance optimizer not available', 'fail');
+            }
+        }
+        
+        function testKeyboardNavigation() {
+            const container = document.getElementById('keyboard-results');
+            container.innerHTML = '';
+            
+            // Test keyboard event listeners
+            let keyboardEventsWorking = false;
+            
+            const testKeyHandler = (e) => {
+                if (e.key === 'Tab' || e.key === 'Enter' || e.key === ' ') {
+                    keyboardEventsWorking = true;
+                    addResult('keyboard-results', `Keyboard event detected: ${e.key}`, 'pass');
+                    document.removeEventListener('keydown', testKeyHandler);
+                }
+            };
+            
+            document.addEventListener('keydown', testKeyHandler);
+            
+            // Test focus management
+            const buttons = document.querySelectorAll('button');
+            const focusableElements = buttons.length;
+            addResult('keyboard-results', `Focusable elements found: ${focusableElements}`, focusableElements > 0 ? 'pass' : 'fail');
+            
+            // Test focus indicators
+            const firstButton = buttons[0];
+            if (firstButton) {
+                firstButton.focus();
+                const computedStyle = window.getComputedStyle(firstButton, ':focus');
+                const hasOutline = computedStyle.outline !== 'none' && computedStyle.outline !== '';
+                addResult('keyboard-results', `Focus indicators present: ${hasOutline}`, hasOutline ? 'pass' : 'fail');
+            }
+            
+            addResult('keyboard-results', 'Press Tab, Enter, or Space to test keyboard events', 'info');
+            addResult('keyboard-results', 'Keyboard navigation tests initialized', 'pass');
+        }
+        
+        function testHighContrast() {
+            const container = document.getElementById('contrast-results');
+            container.innerHTML = '';
+            
+            // Test contrast ratios
+            const testElements = [
+                { selector: 'h1', name: 'Main heading' },
+                { selector: 'h2', name: 'Section headings' },
+                { selector: 'p', name: 'Paragraph text' },
+                { selector: 'button', name: 'Buttons' }
+            ];
+            
+            testElements.forEach(element => {
+                const el = document.querySelector(element.selector);
+                if (el) {
+                    const style = window.getComputedStyle(el);
+                    const color = style.color;
+                    const backgroundColor = style.backgroundColor;
+                    
+                    addResult('contrast-results', `${element.name} - Color: ${color}, Background: ${backgroundColor}`, 'info');
+                    
+                    // Simple contrast check (this is a basic implementation)
+                    const hasGoodContrast = color !== backgroundColor && color !== 'rgba(0, 0, 0, 0)';
+                    addResult('contrast-results', `${element.name} contrast check: ${hasGoodContrast ? 'Good' : 'Needs review'}`, hasGoodContrast ? 'pass' : 'fail');
+                }
+            });
+            
+            // Test high contrast media query
+            const highContrastQuery = window.matchMedia('(prefers-contrast: high)');
+            addResult('contrast-results', `High contrast preference: ${highContrastQuery.matches}`, 'info');
+            
+            // Test forced colors mode
+            const forcedColorsQuery = window.matchMedia('(forced-colors: active)');
+            addResult('contrast-results', `Forced colors mode: ${forcedColorsQuery.matches}`, 'info');
+            
+            addResult('contrast-results', 'High contrast tests completed', 'pass');
+        }
+        
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testPerformanceOptimizations();
+                testAccessibilityFeatures();
+                testKeyboardNavigation();
+                testHighContrast();
+            }, 1000);
+        });
+        
+        // Test keyboard navigation class toggle
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+                addResult('keyboard-results', 'Keyboard navigation class added', 'pass');
+            }
+        });
+        
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+            addResult('keyboard-results', 'Keyboard navigation class removed', 'info');
+        });
+    </script>
+</body>
+</html>
